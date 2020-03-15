@@ -1,25 +1,24 @@
 <template>
   <div id="app">
-    <Nav />
-    <Table :info="[names,times]" />
+      <Nav />
+      <Table />
   </div>
 </template>
 
 <script>
-import Nav from './components/Nav.vue'
-import Table from './components/Table.vue'
+import Nav from './components/Nav'
+import Table from './components/Table'
 
 export default {
-  name: 'App',
-  components: {
+  name:'app',
+  components:{
     Nav,
     Table
   }
 }
 </script>
-
 <style>
 #app {
-
+  
 }
 </style>
