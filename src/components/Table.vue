@@ -38,46 +38,38 @@
         </table>
       </div>
     </div>
-    <div class="card" id="inputCard" ref="inputCard" :class="[seen ? '' : 'd-none']" style="position: absolute;"
-        :style="{left: left + 'px', top: top + 'px' }">
-        <div class="card-header">
-            <button class="close" id="btn-close" @click="remove"><span>×</span></button>
-        </div>
-        <div class="card-body">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <label class="input-group-text temp" for="opt-group"> Группа </label>
-                </div>
-                <select class="custom-select" id="opt-group" ref="optGroup">
-                    <option v-for="group in groups" :key="group.id" :value="group.code">{{group.code}}</option>
-                </select>
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <label class="input-group-text temp" for="opt-lesson">Предмет</label>
-                </div>
-                <select class="custom-select" id="opt-lesson" ref="optDiscipline">
-                  <option v-for="(val,index) in shedule" :key="index" :value="val">{{val.discipline}}</option>
-                </select>
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <label class="input-group-text temp" for="opt-room">Аудитория</label>
-                </div>
-                <select class="custom-select" id="opt-room">
-                    
-                </select>
-            </div>
-            <button class="btn btn-block btn-primary" @click="submit">Submit</button>
-        </div>
-    </div>
+    <FormLesson @removeCard="remove" class="card" id="inputCard" ref="inputCard" :class="[seen ? '' : 'd-none']" style="position: absolute;"
+        :style="{left: left + 'px', top: top + 'px' }" ></FormLesson>
+    <FormRoom class="card d-none" style="position: absolute;"></FormRoom>
+    <Plan class="card d-none" style="position: absolute;"></Plan>  
+    <Group class="card d-none" style="position: absolute;"></Group>
+    <Flow class="card d-none" style="position:absolute;"></Flow>
+    <Direction class="card d-none" style="position:absolute;"></Direction>
+    <Discipline class="card d-none" style="position:absolute;"></Discipline>
+    <Teacher class="card d-none" style="position:absolute;"></Teacher>
   </div>
 </template>
 <script>
 import Cell from "./Cell";
+import FormLesson from "./forms/Lesson";
+import FormRoom from "./forms/Room";
+import Plan from "./forms/Plan";
+import Group from "./forms/Group";
+import Flow from "./forms/Flow";
+import Direction from "./forms/Diretion";
+import Discipline from "./forms/Discipline";
+import Teacher from "./forms/Teacher"
 export default {
   components: {
-    Cell
+    Cell,
+    FormLesson,
+    FormRoom,
+    Plan,
+    Group,
+    Flow,
+    Direction,
+    Discipline,
+    Teacher
   },
   data() {
     return {
@@ -137,7 +129,7 @@ export default {
     create() {
       if(this.width==0)
         this.width = this.matchWidth();
-      this.left = event.clientX - this.width;
+      this.left = event.clientX;
       this.top = event.clientY;
       this.seen=true;
     },
@@ -174,6 +166,6 @@ tbody > tr {
   height: 190px !important;
 }
 .temp {
-  width: 100px;
+  width: 130px;
 }
 </style>
