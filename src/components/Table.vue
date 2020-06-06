@@ -1,19 +1,49 @@
 <template>
   <div>
+    <div class="container" v-if="this.$route.params.type">
+      <div class="input-group mb-3 mt-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="code">Группа</span>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="code"
+          aria-label="code"
+          aria-describedby="code"
+          v-model="code"
+        />
+      </div>
+      <div class="d-flex" v-if="!this.$route.params.type">
+        <p>
+          <a v-for="name in names" :key="name.id" class="mr-1">
+            <span>{{name.code}}</span>
+          </a>
+        </p>
+      </div>
+    </div>
     <div class="d-flex mb-3" id="table">
       <table class="table table-bordered">
         <thead class="thead">
           <tr>
-            <th scope="col">ФИО</th>
+            <th scope="col">Именование</th>
           </tr>
         </thead>
         <tbody class="tbody">
           <tr v-for="name in names" :key="name.id">
-            <th scope="row"><p>{{ name.first_name }}<br>{{name.last_name}}<br>{{name.middle_name}}</p></th>
+            <th scope="row">
+              <p>
+                {{name.code}}{{ name.last_name }}
+                <br />
+                {{name.first_name}}
+                <br />
+                {{name.middle_name}}
+              </p>
+            </th>
           </tr>
         </tbody>
       </table>
-      <div class="div_flow">
+      <div class="div_flow" v-if="shedule">
         <table class="table table-bordered">
           <thead class="thead">
             <tr>
@@ -27,30 +57,69 @@
           </thead>
           <tbody class="tbody">
             <tr v-for="name in names" :key="name.id">
-              <cell v-for="(time,index) in times" :key="index" :info="[time, shedule[name.id], 1]" @createCard="create" />
-              <cell v-for="(time,index) in times" :key="index" :info="[time, shedule[name.id], 2]" @createCard="create" />
-              <cell v-for="(time,index) in times" :key="index" :info="[time, shedule[name.id], 3]" @createCard="create" />
-              <cell v-for="(time,index) in times" :key="index" :info="[time, shedule[name.id], 4]" @createCard="create" />
-              <cell v-for="(time,index) in times" :key="index" :info="[time, shedule[name.id], 5]" @createCard="create" />
-              <cell v-for="(time,index) in times" :key="index" :info="[time, shedule[name.id], 6]" @createCard="create" />
+              <cell
+                v-for="(time,index) in times"
+                :key="index"
+                :info="[time, shedule[name.id], 1, index+1]"
+                @createCard="create"
+              />
+              <cell
+                v-for="(time,index) in times"
+                :key="index"
+                :info="[time, shedule[name.id], 2, index+1]"
+                @createCard="create"
+              />
+              <cell
+                v-for="(time,index) in times"
+                :key="index"
+                :info="[time, shedule[name.id], 3, index+1]"
+                @createCard="create"
+              />
+              <cell
+                v-for="(time,index) in times"
+                :key="index"
+                :info="[time, shedule[name.id], 4, index+1]"
+                @createCard="create"
+              />
+              <cell
+                v-for="(time,index) in times"
+                :key="index"
+                :info="[time, shedule[name.id], 5, index+1]"
+                @createCard="create"
+              />
+              <cell
+                v-for="(time,index) in times"
+                :key="index"
+                :info="[time, shedule[name.id], 6, index+1]"
+                @createCard="create"
+              />
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <FormLesson @removeCard="remove" class="card" id="inputCard" ref="inputCard" :class="[seen ? '' : 'd-none']" style="position: absolute;"
-        :style="{left: left + 'px', top: top + 'px' }" ></FormLesson>
+    <FormLesson
+      @removeCard="remove"
+      class="card"
+      id="inputCard"
+      ref="inputCard"
+      :class="[seen ? '' : 'd-none']"
+      style="position: absolute;"
+      :style="{left: left + 'px', top: top + 'px' }"
+    ></FormLesson>
     <FormRoom class="card d-none" style="position: absolute;"></FormRoom>
-    <Plan class="card d-none" style="position: absolute;"></Plan>  
+    <Plan class="card d-none" style="position: absolute;"></Plan>
     <Group class="card d-none" style="position: absolute;"></Group>
     <Flow class="card d-none" style="position:absolute;"></Flow>
     <Direction class="card d-none" style="position:absolute;"></Direction>
     <Discipline class="card d-none" style="position:absolute;"></Discipline>
     <Teacher class="card d-none" style="position:absolute;"></Teacher>
+    <SimpleCell></SimpleCell>
   </div>
 </template>
 <script>
 import Cell from "./Cell";
+import SimpleCell from "./SimpleCell";
 import FormLesson from "./forms/Lesson";
 import FormRoom from "./forms/Room";
 import Plan from "./forms/Plan";
@@ -58,7 +127,9 @@ import Group from "./forms/Group";
 import Flow from "./forms/Flow";
 import Direction from "./forms/Diretion";
 import Discipline from "./forms/Discipline";
-import Teacher from "./forms/Teacher"
+import Teacher from "./forms/Teacher";
+import Axios from "axios";
+import auth from "../auth";
 export default {
   components: {
     Cell,
@@ -69,42 +140,27 @@ export default {
     Flow,
     Direction,
     Discipline,
-    Teacher
+    Teacher,
+    SimpleCell
   },
   data() {
     return {
-      names: [
-                {
-                    "id": "1",
-                    "first_name": "Иван",
-                    "last_name": "Иванов",
-                    "middle_name": "Иванович",
-                    "disciplines": ["DM","MA"]
-                },
-                {
-                    "id": "2",
-                    "first_name": "Петро",
-                    "last_name": "Иванов",
-                    "middle_name": "Иванович",
-                    "disciplines": ["ENG","RU"]
-                }
-              ],
-      groups:[
+      code: "",
+      auth: auth,
+      names: [],
+      groups: [
         {
-          "id":"1",
-          "code":"181-351",
-          "training_direction":"IS"
+          id: "1",
+          code: "181-351",
+          training_direction: "IS"
         },
         {
-          "id":"2",
-          "code":"181-352",
-          "training_direction":"IB"
+          id: "2",
+          code: "181-352",
+          training_direction: "IB"
         }
       ],
-      shedule:{ 
-        "1":[{"discipline":"MA","lecture_hall":"Н303","building":"ЭЗ","group":"181-351","time":"9:00-10:30", "day_of_week":1},{"discipline":"DM","lecture_hall":"В504","building":"ЭЗ","group":"181-351","time":"16:10-17:40", "day_of_week":1}],
-        "2":[{"discipline":"Eng","lecture_hall":"ПК517","building":"ПК","group":"181-352","time":"10:40-12:10", "day_of_week":2}],
-      },
+      shedule: {},
       times: [
         "9:00-10:30",
         "10:40-12:10",
@@ -114,35 +170,137 @@ export default {
         "17:50-19:20",
         "19:30-21:00"
       ],
-      toSend:{
-        "group":'',
-        "discipline":'',
-        "class":''
+      toSend: {
+        group: "",
+        discipline: "",
+        class: ""
       },
-      width:0,
+      width: 0,
       seen: false,
       left: 0,
       top: 0
     };
   },
+  watch: {
+    code() {
+      if (this.$route.params.type) if (this.code != null) this.find();
+    },
+    /*names: function() {
+      if (this.$route.params.type == "group") {
+        Axios.get("/api/group").then(value => {
+          this.names = value.data;
+        });
+      } else if (this.$route.params.type == "teacher") {
+        Axios.get("/api/teacher").then(value => {
+          this.names = value.data;
+        });
+      }
+    },
+    shedule: function() {
+      if (this.$route.params.type == "group") {
+        Axios.get("/api/lesson/?dtype=g").then(value => {
+          this.shedule = value.data;
+        });
+      } else if (this.$route.params.type == "teacher") {
+        Axios.get("/api/lesson/?dtype=t").then(value => {
+          this.shedule = value.data;
+        });
+      }
+    }*/
+    link: function() {
+      if (!this.$route.params.type) {
+        this.names =[];
+        this.shedule={};
+      } else if (this.$route.params.type == "group") {
+        Axios.get("/api/group").then(value => {
+          this.names = value.data;
+        });
+        Axios.get("/api/lesson/?dtype=g").then(value => {
+          this.shedule = value.data;
+        });
+      } else if (this.$route.params.type == "teacher") {
+        Axios.get("/api/teacher").then(value => {
+          this.names = value.data;
+        });
+        Axios.get("/api/lesson/?dtype=t").then(value => {
+          this.shedule = value.data;
+        });
+      }
+      /*if (this.$route.params.type == "group") {
+        Axios.get("/api/lesson/?dtype=g").then(value => {
+          this.shedule = value.data;
+        });
+      } else if (this.$route.params.type == "teacher") {
+        Axios.get("/api/lesson/?dtype=t").then(value => {
+          this.shedule = value.data;
+        });
+      }*/
+    }
+  },
+  computed: {
+    link: function() {
+      return this.$route.params.type;
+    }
+  },
+  beforeMount() {
+    var t = this;
+    var cur_rout = this.$route.params.type + "";
+    var toSend = "/api/" + cur_rout;
+    if (cur_rout == "group") {
+      Axios.get(toSend).then(value => {
+        t.names = value.data;
+      });
+      Axios.get("/api/lesson/?dtype=g").then(value => {
+        t.shedule = value.data;
+      });
+    } else if (cur_rout == "teacher") {
+      Axios.get("/api/teacher").then(value => {
+        t.names = value.data;
+      });
+      Axios.get("/api/lesson/?dtype=t").then(value => {
+        t.shedule = value.data;
+      });
+    }
+  },
   methods: {
     create() {
-      if(this.width==0)
-        this.width = this.matchWidth();
+      //Axios.post("/api/lesson/",{discipline_id: 1, group_id: 1, teacher_id: 1, lecture_hall_id: 1});
+      //Axios.get("/api/lesson/?dtype=g");
+      //Axios.put("/api/lesson/187");
+      if (this.width == 0) this.width = this.matchWidth();
       this.left = event.clientX;
       this.top = event.clientY;
-      this.seen=true;
+      this.seen = true;
     },
-    matchWidth(){
+    matchWidth() {
       return this.$refs.inputCard.clientWidth;
     },
-    remove(){
-      this.seen=false;
+    remove() {
+      this.seen = false;
     },
-    submit(){
+    submit() {
       this.toSend.group = this.$refs.optGroup.value;
       this.toSend.discipline = this.$refs.optDiscipline.value;
       console.log(this.toSend.group, this.toSend.discipline);
+    },
+    find() {
+      if (this.$route.params.type) {
+        var toFind = "";
+        var toFind2 = "";
+        if (this.$route.params.type == "teacher") {
+          toFind = "/api/teacher/?teacher=";
+          toFind2 = "/api/lesson/?dtype=t&&teacher=";
+        } else if (this.$route.params.type == "group") {
+          toFind = "/api/group/?code=";
+          toFind2 = "/api/lesson/?dtype=g&&group=";
+        }
+        Axios.get(toFind + this.code).then(value => {
+          this.names = value.data;
+        });
+        Axios.get(toFind2 + this.code).then(value => {
+          this.shedule = value.data;
+        });
+      }
     }
   }
 };
@@ -163,7 +321,7 @@ export default {
 }
 
 tbody > tr {
-  height: 190px !important;
+  height: 200px !important;
 }
 .temp {
   width: 130px;
