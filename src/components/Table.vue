@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container" v-if="this.$route.params.type">
+    <div class="container">
       <div class="input-group mb-3 mt-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="code">Группа</span>
@@ -16,89 +16,125 @@
       </div>
       <div class="d-flex" v-if="!this.$route.params.type">
         <p>
-          <a v-for="name in names" :key="name.id" class="mr-1">
-            <span>{{name.code}}</span>
-          </a>
+          <a
+            v-for="name in names"
+            :key="name.id"
+            class="mr-1 link"
+            @click="code=name.code;display()"
+          >{{name.code}}</a>
         </p>
       </div>
     </div>
-    <div class="d-flex mb-3" id="table">
-      <table class="table table-bordered">
-        <thead class="thead">
-          <tr>
-            <th scope="col">Именование</th>
-          </tr>
-        </thead>
-        <tbody class="tbody">
-          <tr v-for="name in names" :key="name.id">
-            <th scope="row">
-              <p>
-                {{name.code}}{{ name.last_name }}
-                <br />
-                {{name.first_name}}
-                <br />
-                {{name.middle_name}}
-              </p>
-            </th>
-          </tr>
-        </tbody>
-      </table>
-      <div class="div_flow" v-if="shedule">
-        <table class="table table-bordered">
-          <thead class="thead">
-            <tr>
-              <th scope="col" colspan="7">ПН</th>
-              <th scope="col" colspan="7">ВТ</th>
-              <th scope="col" colspan="7">СР</th>
-              <th scope="col" colspan="7">ЧТ</th>
-              <th scope="col" colspan="7">ПТ</th>
-              <th scope="col" colspan="7">СБ</th>
-            </tr>
-          </thead>
-          <tbody class="tbody">
-            <tr v-for="name in names" :key="name.id">
-              <cell
+    <div class="layer" scrolling="auto" v-if="this.$route.params.type"> <!-- таблицы редактирования-->
+      <tr class="d-flex mb-3" id="table">
+        <td>
+          <table class="table table-bordered">
+            <thead class="thead">
+              <tr>
+                <th scope="col">Именование</th>
+              </tr>
+            </thead>
+            <tbody class="tbody">
+              <tr v-for="name in names" :key="name.id">
+                <th scope="row">
+                  <p>
+                    {{name.code}}{{ name.last_name }}
+                    <br />
+                    {{name.first_name}}
+                    <br />
+                    {{name.middle_name}}
+                  </p>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td class="div_flow">
+          <table class="table table-bordered">
+            <thead class="thead">
+              <tr>
+                <th scope="col" colspan="7" v-for="day in days" :key="day.id">
+                  <span v-if="day==1">ПН</span>
+                  <span v-else-if="day==2">ВТ</span>
+                  <span v-else-if="day==3">СР</span>
+                  <span v-else-if="day==4">ЧТ</span>
+                  <span v-else-if="day==5">ПТ</span>
+                  <span v-else-if="day==6">СБ</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="tbody">
+              <tr v-for="name in names" :key="name.id">
+                <cell
+                  v-for="(time,index) in times"
+                  :key="index"
+                  :info="[time, shedule[name.id], 1, index+1,type]"
+                  @createCard="create"
+                />
+                <cell
+                  v-for="(time,index) in times"
+                  :key="index"
+                  :info="[time, shedule[name.id], 2, index+1,type]"
+                  @createCard="create"
+                />
+                <cell
+                  v-for="(time,index) in times"
+                  :key="index"
+                  :info="[time, shedule[name.id], 3, index+1,type]"
+                  @createCard="create"
+                />
+                <cell
+                  v-for="(time,index) in times"
+                  :key="index"
+                  :info="[time, shedule[name.id], 4, index+1,type]"
+                  @createCard="create"
+                />
+                <cell
+                  v-for="(time,index) in times"
+                  :key="index"
+                  :info="[time, shedule[name.id], 5, index+1,type]"
+                  @createCard="create"
+                />
+                <cell
+                  v-for="(time,index) in times"
+                  :key="index"
+                  :info="[time, shedule[name.id], 6, index+1,type]"
+                  @createCard="create"
+                />
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </div>
+    <!-- Пиши ниже -->
+    <div class="" v-else-if="shedule"> <!-- Окно расписания -->
+    <table  style>
+      <tr>
+        <td v-for="day in days" :key="day.id" >
+          <table class="table table-bordered col">
+            <thead class="thead">
+              <th scope="col" v-if="day==1">ПН</th>
+              <th scope="col" v-else-if="day==2">ВТ</th>
+              <th scope="col" v-else-if="day==3">СР</th>
+              <th scope="col" v-else-if="day==4">ЧТ</th>
+              <th scope="col" v-else-if="day==5">ПТ</th>
+              <th scope="col" v-else-if="day==6">СБ</th>
+            </thead>
+            <tbody>
+              <SimpleCell
                 v-for="(time,index) in times"
                 :key="index"
-                :info="[time, shedule[name.id], 1, index+1]"
-                @createCard="create"
-              />
-              <cell
-                v-for="(time,index) in times"
-                :key="index"
-                :info="[time, shedule[name.id], 2, index+1]"
-                @createCard="create"
-              />
-              <cell
-                v-for="(time,index) in times"
-                :key="index"
-                :info="[time, shedule[name.id], 3, index+1]"
-                @createCard="create"
-              />
-              <cell
-                v-for="(time,index) in times"
-                :key="index"
-                :info="[time, shedule[name.id], 4, index+1]"
-                @createCard="create"
-              />
-              <cell
-                v-for="(time,index) in times"
-                :key="index"
-                :info="[time, shedule[name.id], 5, index+1]"
-                @createCard="create"
-              />
-              <cell
-                v-for="(time,index) in times"
-                :key="index"
-                :info="[time, shedule[name.id], 6, index+1]"
-                @createCard="create"
-              />
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                :info="[time, shedule, day, index+1]"
+              ></SimpleCell>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
     </div>
     <FormLesson
+      :info="[toSend, shedule]"
       @removeCard="remove"
       class="card"
       id="inputCard"
@@ -114,7 +150,6 @@
     <Direction class="card d-none" style="position:absolute;"></Direction>
     <Discipline class="card d-none" style="position:absolute;"></Discipline>
     <Teacher class="card d-none" style="position:absolute;"></Teacher>
-    <SimpleCell></SimpleCell>
   </div>
 </template>
 <script>
@@ -145,6 +180,7 @@ export default {
   },
   data() {
     return {
+      type: "",
       code: "",
       auth: auth,
       names: [],
@@ -160,7 +196,7 @@ export default {
           training_direction: "IB"
         }
       ],
-      shedule: {},
+      shedule: false,
       times: [
         "9:00-10:30",
         "10:40-12:10",
@@ -170,20 +206,18 @@ export default {
         "17:50-19:20",
         "19:30-21:00"
       ],
+      days: [1, 2, 3, 4, 5, 6],
       toSend: {
-        group: "",
-        discipline: "",
-        class: ""
       },
       width: 0,
       seen: false,
       left: 0,
-      top: 0
+      top: 0,
     };
   },
   watch: {
     code() {
-      if (this.$route.params.type) if (this.code != null) this.find();
+      this.find();
     },
     /*names: function() {
       if (this.$route.params.type == "group") {
@@ -208,15 +242,19 @@ export default {
       }
     }*/
     link: function() {
+      this.code = "";
       if (!this.$route.params.type) {
-        this.names =[];
-        this.shedule={};
+        this.names = [];
+        this.shedule = false;
       } else if (this.$route.params.type == "group") {
         Axios.get("/api/group").then(value => {
           this.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=g").then(value => {
           this.shedule = value.data;
+        });
+        Axios.get("/api/teacher").then(value => {
+          this.toSend = value.data;
         });
       } else if (this.$route.params.type == "teacher") {
         Axios.get("/api/teacher").then(value => {
@@ -225,7 +263,11 @@ export default {
         Axios.get("/api/lesson/?dtype=t").then(value => {
           this.shedule = value.data;
         });
+        Axios.get("/api/group").then(value => {
+          this.toSend = value.data;
+        });
       }
+      this.type = this.$route.params.type;
       /*if (this.$route.params.type == "group") {
         Axios.get("/api/lesson/?dtype=g").then(value => {
           this.shedule = value.data;
@@ -243,23 +285,32 @@ export default {
     }
   },
   beforeMount() {
-    var t = this;
-    var cur_rout = this.$route.params.type + "";
-    var toSend = "/api/" + cur_rout;
-    if (cur_rout == "group") {
-      Axios.get(toSend).then(value => {
-        t.names = value.data;
-      });
-      Axios.get("/api/lesson/?dtype=g").then(value => {
-        t.shedule = value.data;
-      });
-    } else if (cur_rout == "teacher") {
-      Axios.get("/api/teacher").then(value => {
-        t.names = value.data;
-      });
-      Axios.get("/api/lesson/?dtype=t").then(value => {
-        t.shedule = value.data;
-      });
+    if (this.$route.params.type) {
+      var t = this;
+      var cur_rout = this.$route.params.type + "";
+      var toSend = "/api/" + cur_rout;
+      if (cur_rout == "group") {
+        Axios.get(toSend).then(value => {
+          t.names = value.data;
+        });
+        Axios.get("/api/lesson/?dtype=g").then(value => {
+          t.shedule = value.data;
+        });
+        Axios.get("/api/teacher").then(value => {
+          t.toSend = value.data;
+        });
+      } else if (cur_rout == "teacher") {
+        Axios.get("/api/teacher").then(value => {
+          t.names = value.data;
+        });
+        Axios.get("/api/lesson/?dtype=t").then(value => {
+          t.shedule = value.data;
+        });
+        Axios.get("/api/group").then(value => {
+          t.toSend = value.data;
+        });
+      }
+      this.type = cur_rout;
     }
   },
   methods: {
@@ -288,7 +339,7 @@ export default {
         var toFind = "";
         var toFind2 = "";
         if (this.$route.params.type == "teacher") {
-          toFind = "/api/teacher/?teacher=";
+          toFind = "/api/teacher/?last_name=";
           toFind2 = "/api/lesson/?dtype=t&&teacher=";
         } else if (this.$route.params.type == "group") {
           toFind = "/api/group/?code=";
@@ -300,14 +351,29 @@ export default {
         Axios.get(toFind2 + this.code).then(value => {
           this.shedule = value.data;
         });
+      } else {
+        Axios.get("/api/group/?code=" + this.code).then(value => {
+          this.names = value.data;
+        });
       }
+    },
+    display() {
+      Axios.get("/api/lesson/?group=" + this.code).then(value => {
+        this.shedule = value.data;
+      });
     }
   }
 };
 </script>
 <style>
+.layer {
+  overflow-y: scroll; /* Добавляем полосы прокрутки */
+  width: 100%; /* Ширина блока */
+  height: 550px; /* Высота блока */
+  border: 2px solid #f5f5f5;
+}
 .div_flow {
-  overflow-x: auto;
+  overflow-x: scroll;
   white-space: nowrap;
 }
 
@@ -321,9 +387,17 @@ export default {
 }
 
 tbody > tr {
-  height: 200px !important;
+  height: 175px !important;
 }
 .temp {
   width: 130px;
+}
+.unselectable {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Chrome/Safari/Opera */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently*/
 }
 </style>

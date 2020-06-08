@@ -3,7 +3,8 @@
     <p id="time">{{info[0]}}</p>
     <span v-for="(i,index) in info[1]" :key="index">
       <span v-if="(i.day_of_week == info[2])&&(i.lesson==info[3])">
-          <p id="group">{{i.group.code}}</p>
+          <p v-if="info[4]=='teacher'" id="group">{{i.group.code}}</p>
+          <p v-else-if="info[4]=='group'">{{i.teacher.last_name}} {{i.teacher.first_name[0]}}.{{i.teacher.middle_name[0]}}.</p>
           <p id="discipline" class="text-truncate">{{i.discipline.discipline.title}}</p>
           <p id="lecture_hall">{{i.lecture_hall.code}}</p>
       </span>
