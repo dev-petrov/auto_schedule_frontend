@@ -339,16 +339,16 @@ export default {
         var toFind = "";
         var toFind2 = "";
         if (this.$route.params.type == "teacher") {
-          toFind = "/api/teacher/?last_name=";
-          toFind2 = "/api/lesson/?dtype=t&&teacher=";
+          toFind = "/api/teacher/?name=";
+          toFind2 = "/api/lesson/?dtype=t&teacher=";
         } else if (this.$route.params.type == "group") {
           toFind = "/api/group/?code=";
-          toFind2 = "/api/lesson/?dtype=g&&group=";
+          toFind2 = "/api/lesson/?dtype=g&group=";
         }
-        Axios.get(toFind + this.code).then(value => {
+        Axios.get(toFind + this.code.split(' ').join(',')).then(value => {
           this.names = value.data;
         });
-        Axios.get(toFind2 + this.code).then(value => {
+        Axios.get(toFind2 + this.code.split(' ').join(',')).then(value => {
           this.shedule = value.data;
         });
       } else {

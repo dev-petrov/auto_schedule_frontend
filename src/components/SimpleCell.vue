@@ -19,11 +19,22 @@ export default {
   props: ["info"],
   data() {
     return {
-      active: false,
       a: 0,
       b:'a',
-
+      data: false,
     };
+  },
+  computed:{
+    
+    active: function(){
+      for(var i in this.info[1]){
+        console.log(i);
+        console.log(this.info[1][i]);
+        if((this.info[1][i].day_of_week == this.info[2])&&(this.info[1][i].lesson==this.info[3])) 
+            return false;
+      }
+      return true;
+    }
   },
   methods: {}
 };
