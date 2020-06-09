@@ -6,7 +6,15 @@
         <span v-if="(i.day_of_week == info[2])&&(i.lesson==info[3])" >
           <p>{{i.teacher.last_name}} {{i.teacher.first_name[0]}}.{{i.teacher.middle_name[0]}}.</p>
           <p id="discipline" class="text-truncate">{{i.discipline.discipline.title}}</p>
-          <p id="lecture_hall">{{i.lecture_hall.code}}</p>
+          <span v-if="(i.lecture_hall.building == 'E')">
+            <p style="color: darkblue" id="lecture_hall"><b>{{i.lecture_hall.code}}</b></p>
+          </span>
+          <span v-if="(i.lecture_hall.building == 'A')">
+            <p style="color: darkgreen" id="lecture_hall"><b>{{i.lecture_hall.code}}</b></p>
+          </span>
+          <span v-if="(i.lecture_hall.building == 'V')">
+            <p style="color: orangered" id="lecture_hall"><b>{{i.lecture_hall.code}}</b></p>
+          </span>
           <!-- info[1][2].lecture_hall.building -->
         </span>
       </span>
