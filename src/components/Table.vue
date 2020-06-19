@@ -108,7 +108,7 @@
       </tr>
     </div>
     <!-- Пиши ниже -->
-    <div class="" v-else-if="shedule"> <!-- Окно расписания -->
+    <div class="container" v-else-if="shedule"> <!-- Окно расписания -->
     <table  style>
       <tr>
         <td v-for="day in days" :key="day.id" >

@@ -21,6 +21,17 @@
     </td>
   </tr>
 </template>
+<!--<template>
+  <tr :class="{'d-none': active}">
+    
+    {{info[1][8].lecture_hall.building}}
+    <td style="">
+      <p id="time">{{info[0]}}</p>
+      <!-- <span v-for="(i,index) in info[1]" :key="index"> -->
+      <!-- </span> 
+    </td>
+  </tr>
+</template>-->
 <script>
 export default {
   name: "cell",
