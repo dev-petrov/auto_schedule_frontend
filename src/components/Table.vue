@@ -189,7 +189,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Ошибка!</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" style="font-size: 20px">&times;</span>
             </button>
           </div>
@@ -277,42 +277,48 @@ export default {
     code() {
       this.find();
     },
-    link: function() {
+    link() {
       this.code = "";
       if (!this.$route.params.type) {
         this.names = [];
         this.shedule = false;
       } else if (this.$route.params.type == "group") {
-        Axios.get("/api/group").then(value => {
+        this.err_mess = "У данного преподавателя уже есть занятие в это время";
+        Axios.get("/api/group/").then(value => {
           this.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=g").then(value => {
           this.shedule = value.data;
         });
-        Axios.get("/api/teacher").then(value => {
+
+        Axios.get("/api/lecture_hall/").then(value => {
+          this.toSend.room = value.data;
+        });
+        Axios.get("/api/teacher/").then(value => {
           this.toSend.names = value.data;
         });
+        Axios.get("/api/discipline/").then(value => {
+          this.toSend.discipline = value.data;
+        });
       } else if (this.$route.params.type == "teacher") {
-        Axios.get("/api/teacher").then(value => {
+        this.err_mess = "У данной группы уже есть занятие в это время";
+        Axios.get("/api/teacher/").then(value => {
           this.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=t").then(value => {
           this.shedule = value.data;
         });
-        Axios.get("/api/group").then(value => {
+        Axios.get("/api/group/").then(value => {
           this.toSend.names = value.data;
+        });
+        Axios.get("/api/lecture_hall/").then(value => {
+          this.toSend.room = value.data;
+        });
+        Axios.get("/api/discipline/").then(value => {
+          this.toSend.discipline = value.data;
         });
       }
       this.type = this.$route.params.type;
-      /*if (this.$route.params.type == "group") {
-        Axios.get("/api/lesson/?dtype=g").then(value => {
-          this.shedule = value.data;
-        });
-      } else if (this.$route.params.type == "teacher") {
-        Axios.get("/api/lesson/?dtype=t").then(value => {
-          this.shedule = value.data;
-        });
-      }*/
     }
   },
   computed: {
@@ -333,22 +339,22 @@ export default {
         Axios.get("/api/lesson/?dtype=g").then(value => {
           t.shedule = value.data;
         });
-        Axios.get("/api/teacher").then(value => {
+        Axios.get("/api/teacher/").then(value => {
           t.toSend.names = value.data;
         });
       } else if (cur_rout == "teacher") {
         t.err_mess = "У данной группы уже есть занятие в это время";
-        Axios.get("/api/teacher").then(value => {
+        Axios.get("/api/teacher/").then(value => {
           t.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=t").then(value => {
           t.shedule = value.data;
         });
-        Axios.get("/api/group").then(value => {
+        Axios.get("/api/group/").then(value => {
           t.toSend.names = value.data;
         });
       }
-      Axios.get("/api/lecture_hall").then(value => {
+      Axios.get("/api/lecture_hall/").then(value => {
         t.toSend.room = value.data;
       });
       Axios.get("/api/discipline/").then(value => {

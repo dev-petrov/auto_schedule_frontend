@@ -1,19 +1,25 @@
 <template>
-  <div :class="{'d-none': active}">
-    <tr>
-      <td :style="{background: color}" class="card-body">
-        <p id="time">{{info[0]}}</p>
-        <span v-for="(i,index) in info[1]" :key="index">
-          <span v-if="(i.day_of_week == info[2])&&(i.lesson==info[3])">
-            <p>{{i.teacher.last_name}} {{i.teacher.first_name[0]}}.{{i.teacher.middle_name[0]}}.</p>
-            <p id="discipline" class="text-truncate">{{i.discipline.title}}</p>
-            <p id="lecture_hall">{{i.lecture_hall.code}}</p>
-            <!-- info[1][2].lecture_hall.building -->
-          </span>
+  <tr :class="{'d-none': active}">
+    <td class="p-2">
+      <p id="time">{{info[0]}}</p>
+      <span v-for="(i,index) in info[1]" :key="index">
+        <span v-if="(i.day_of_week == info[2])&&(i.lesson==info[3])">
+          <p>{{i.teacher.last_name}} {{i.teacher.first_name[0]}}.{{i.teacher.middle_name[0]}}.</p>
+          <p id="discipline" class="text-truncate">{{i.discipline.title}}</p>
+          <p v-if="(i.lecture_hall.building == 'E')" style="color: darkblue" id="lecture_hall">
+            <b>{{i.lecture_hall.code}}</b>
+          </p>
+          <p v-if="(i.lecture_hall.building == 'A')" style="color: darkgreen" id="lecture_hall">
+            <b>{{i.lecture_hall.code}}</b>  
+          </p>
+          <p v-if="(i.lecture_hall.building == 'V')" style="color: orangered" id="lecture_hall">
+            <b>{{i.lecture_hall.code}}</b>
+          </p>
+          <!-- info[1][2].lecture_hall.building -->
         </span>
-      </td>
-    </tr>
-  </div>
+      </span>
+    </td>
+  </tr>
 </template>
 <script>
 export default {
