@@ -54,53 +54,20 @@
             <thead class="thead">
               <tr>
                 <th scope="col" colspan="7" v-for="day in days" :key="day.id">
-                  <span v-if="day==1">ПН</span>
-                  <span v-else-if="day==2">ВТ</span>
-                  <span v-else-if="day==3">СР</span>
-                  <span v-else-if="day==4">ЧТ</span>
-                  <span v-else-if="day==5">ПТ</span>
-                  <span v-else-if="day==6">СБ</span>
+                  <span>{{day_of_week.get(day)}}</span>
                 </th>
               </tr>
             </thead>
             <tbody class="tbody">
               <tr v-for="name in names" :key="name.id">
-                <cell
-                  v-for="(time,index) in times"
-                  :key="index"
-                  :info="[time, shedule[name.id], 1, index+1,type]"
-                  @createCard="create"
-                />
-                <cell
-                  v-for="(time,index) in times"
-                  :key="index"
-                  :info="[time, shedule[name.id], 2, index+1,type]"
-                  @createCard="create"
-                />
-                <cell
-                  v-for="(time,index) in times"
-                  :key="index"
-                  :info="[time, shedule[name.id], 3, index+1,type]"
-                  @createCard="create"
-                />
-                <cell
-                  v-for="(time,index) in times"
-                  :key="index"
-                  :info="[time, shedule[name.id], 4, index+1,type]"
-                  @createCard="create"
-                />
-                <cell
-                  v-for="(time,index) in times"
-                  :key="index"
-                  :info="[time, shedule[name.id], 5, index+1,type]"
-                  @createCard="create"
-                />
-                <cell
-                  v-for="(time,index) in times"
-                  :key="index"
-                  :info="[time, shedule[name.id], 6, index+1,type]"
-                  @createCard="create"
-                />
+                <template v-for="(day, i) in 6">
+                  <cell
+                    v-for="(time, index) in times"
+                    :key="index + i"
+                    :info="[time, shedule[name.id], day, index+1,type]"
+                    @createCard="create"
+                  />
+                </template>
               </tr>
             </tbody>
           </table>
@@ -114,12 +81,7 @@
         <td v-for="day in days" :key="day.id" >
           <table class="table table-bordered col">
             <thead class="thead">
-              <th scope="col" v-if="day==1">ПН</th>
-              <th scope="col" v-else-if="day==2">ВТ</th>
-              <th scope="col" v-else-if="day==3">СР</th>
-              <th scope="col" v-else-if="day==4">ЧТ</th>
-              <th scope="col" v-else-if="day==5">ПТ</th>
-              <th scope="col" v-else-if="day==6">СБ</th>
+              <th scope="col">{{day_of_week.get(day)}}</th>
             </thead>
             <tbody>
               <SimpleCell
@@ -165,6 +127,7 @@ import Discipline from "./forms/Discipline";
 import Teacher from "./forms/Teacher";
 import Axios from "axios";
 import auth from "../auth";
+import defaults_ru from "../data/defaults_ru"
 export default {
   components: {
     Cell,
@@ -184,6 +147,7 @@ export default {
       code: "",
       auth: auth,
       names: [],
+      day_of_week: defaults_ru.day_of_week,
       groups: [
         {
           id: "1",
@@ -219,28 +183,6 @@ export default {
     code() {
       this.find();
     },
-    /*names: function() {
-      if (this.$route.params.type == "group") {
-        Axios.get("/api/group").then(value => {
-          this.names = value.data;
-        });
-      } else if (this.$route.params.type == "teacher") {
-        Axios.get("/api/teacher").then(value => {
-          this.names = value.data;
-        });
-      }
-    },
-    shedule: function() {
-      if (this.$route.params.type == "group") {
-        Axios.get("/api/lesson/?dtype=g").then(value => {
-          this.shedule = value.data;
-        });
-      } else if (this.$route.params.type == "teacher") {
-        Axios.get("/api/lesson/?dtype=t").then(value => {
-          this.shedule = value.data;
-        });
-      }
-    }*/
     link: function() {
       this.code = "";
       if (!this.$route.params.type) {
@@ -268,15 +210,6 @@ export default {
         });
       }
       this.type = this.$route.params.type;
-      /*if (this.$route.params.type == "group") {
-        Axios.get("/api/lesson/?dtype=g").then(value => {
-          this.shedule = value.data;
-        });
-      } else if (this.$route.params.type == "teacher") {
-        Axios.get("/api/lesson/?dtype=t").then(value => {
-          this.shedule = value.data;
-        });
-      }*/
     }
   },
   computed: {
