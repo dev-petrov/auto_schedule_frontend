@@ -1,4 +1,5 @@
 import Axios from "axios";
+import Vue from 'vue'
 
 export default {
     isLoggedIn: false,
@@ -10,22 +11,29 @@ export default {
             var user = data.data;
             console.log(user);
             localStorage.setItem('isLoggedIn', 1);
-            location.href="/#/teacher";
-        }).catch(()=>{
+            location.href = "/#/teacher";
+            Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
+
+        }).catch(() => {
             localStorage.setItem('isLoggedIn', 0);
+            Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
+
         });
     },
     logout() {
         Axios.post("/api/auth/logout/").then(() => {
             localStorage.setItem('isLoggedIn', 0);
-            location.href="/";
-        })
+            location.href = "/";
+            Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken'); 
+
+        });
     },
     async checkAuth() {
-        Axios.get("/api/auth/user/").then(()=>{
+        Axios.get("/api/auth/user/").then(() => {
             this.isLoggedIn = true;
             localStorage.setItem('isLoggedIn', 1);
-        }).catch(()=>{
+
+        }).catch(() => {
             localStorage.setItem('isLoggedIn', 0);
         });
     }

@@ -14,18 +14,24 @@
           v-model="code"
         />
       </div>
-      <div class="d-flex" v-if="!this.$route.params.type">
+      <div class="d-flex" v-if="!this.$route.params.type&&code!=''&&v">
         <p>
-          <a
+          <button
             v-for="name in names"
             :key="name.id"
-            class="mr-1 link"
-            @click="code=name.code;display()"
-          >{{name.code}}</a>
+            class="mr-1 btn btn-link btn-sm"
+            @click="code=name.code;show()"
+          >{{name.code}}</button>
         </p>
       </div>
     </div>
-    <div class="layer" scrolling="auto" v-if="this.$route.params.type"> <!-- таблицы редактирования-->
+    <div
+      class="layer container"
+      scrolling="auto"
+      v-if="this.$route.params.type"
+      style="height: 400px; padding: 0 !important;"
+    >
+      <!-- таблицы редактирования-->
       <tr class="d-flex mb-3" id="table">
         <td>
           <table class="table table-bordered">
@@ -64,8 +70,8 @@
                   <cell
                     v-for="(time, index) in times"
                     :key="index + i"
-                    :info="[time, shedule[name.id], day, index+1,type]"
-                    @createCard="create"
+                    :info="[time, shedule[name.id], day, index+1,type, name.id]"
+                    @create="create"
                   />
                 </template>
               </tr>
@@ -75,34 +81,32 @@
       </tr>
     </div>
     <!-- Пиши ниже -->
-    <div class="" v-else-if="shedule"> <!-- Окно расписания -->
-    <table  style>
-      <tr>
-        <td v-for="day in days" :key="day.id" >
-          <table class="table table-bordered col">
-            <thead class="thead">
-              <th scope="col">{{day_of_week.get(day)}}</th>
-            </thead>
-            <tbody>
-              <SimpleCell
-                v-for="(time,index) in times"
-                :key="index"
-                :info="[time, shedule, day, index+1]"
-              ></SimpleCell>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </table>
+    <div v-else-if="shedule" class="container">
+      <!-- Окно расписания -->
+      <div class="d-flex flex-row row justify-content-around">
+        <div class="d-flex flex-column col-lg-4 col-xs-6 mb-3" v-for="day in days" :key="day.id">
+          <thead class="thead card-header p-3">
+            <th scope="col">{{day_of_week.get(day)}}</th>
+          </thead>
+          <SimpleCell
+            class="card"
+            v-for="(time,index) in times"
+            :key="index"
+            :info="[time, shedule, day, index+1, names]"
+          ></SimpleCell>
+        </div>
+      </div>
     </div>
     <FormLesson
-      :info="[toSend, shedule]"
+      :mouseup="function (e){}"
+      :info="[toSend]"
       @removeCard="remove"
+      @update="update()"
       class="card"
       id="inputCard"
       ref="inputCard"
       :class="[seen ? '' : 'd-none']"
-      style="position: absolute;"
+      style="position: absolute; "
       :style="{left: left + 'px', top: top + 'px' }"
     ></FormLesson>
     <FormRoom class="card d-none" style="position: absolute;"></FormRoom>
@@ -112,6 +116,26 @@
     <Direction class="card d-none" style="position:absolute;"></Direction>
     <Discipline class="card d-none" style="position:absolute;"></Discipline>
     <Teacher class="card d-none" style="position:absolute;"></Teacher>
+    <div
+      class="modal fade"
+      tabindex="-1"
+      id="myModal"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ошибка!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" style="font-size: 20px">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">{{err_mess}}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -143,6 +167,8 @@ export default {
   },
   data() {
     return {
+      v: true,
+      err_mess: "",
       type: "",
       code: "",
       auth: auth,
@@ -171,42 +197,66 @@ export default {
         "19:30-21:00"
       ],
       days: [1, 2, 3, 4, 5, 6],
-      toSend: {
-      },
       width: 0,
       seen: false,
       left: 0,
       top: 0,
+      toSend: {
+        shedule: "",
+        type: "",
+        names: "",
+        lesson: "",
+        room: "",
+        rooms: "",
+        discipline: "",
+        dow_les: "",
+        id: ""
+      }
     };
   },
   watch: {
     code() {
       this.find();
     },
-    link: function() {
+    link() {
       this.code = "";
       if (!this.$route.params.type) {
         this.names = [];
         this.shedule = false;
       } else if (this.$route.params.type == "group") {
-        Axios.get("/api/group").then(value => {
+        this.err_mess = "У данного преподавателя уже есть занятие в это время";
+        Axios.get("/api/group/").then(value => {
           this.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=g").then(value => {
           this.shedule = value.data;
         });
-        Axios.get("/api/teacher").then(value => {
-          this.toSend = value.data;
+
+        Axios.get("/api/lecture_hall/").then(value => {
+          this.toSend.room = value.data;
+        });
+        Axios.get("/api/teacher/").then(value => {
+          this.toSend.names = value.data;
+        });
+        Axios.get("/api/discipline/").then(value => {
+          this.toSend.discipline = value.data;
         });
       } else if (this.$route.params.type == "teacher") {
-        Axios.get("/api/teacher").then(value => {
+        this.err_mess = "У данной группы уже есть занятие в это время";
+        Axios.get("/api/teacher/").then(value => {
           this.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=t").then(value => {
           this.shedule = value.data;
         });
-        Axios.get("/api/group").then(value => {
-          this.toSend = value.data;
+        Axios.get("/api/group/").then(value => {
+          this.toSend.names = value.data;
+        });
+        Axios.get("/api/lecture_hall/").then(value => {
+          this.toSend.room = value.data;
+        });
+        Axios.get("/api/discipline/").then(value => {
+          this.toSend.discipline = value.data;
         });
       }
       this.type = this.$route.params.type;
@@ -223,31 +273,59 @@ export default {
       var cur_rout = this.$route.params.type + "";
       var toSend = "/api/" + cur_rout;
       if (cur_rout == "group") {
+        t.err_mess = "У данного преподавателя уже есть занятие в это время";
         Axios.get(toSend).then(value => {
           t.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=g").then(value => {
           t.shedule = value.data;
         });
-        Axios.get("/api/teacher").then(value => {
-          t.toSend = value.data;
+        Axios.get("/api/teacher/").then(value => {
+          t.toSend.names = value.data;
         });
       } else if (cur_rout == "teacher") {
-        Axios.get("/api/teacher").then(value => {
+        t.err_mess = "У данной группы уже есть занятие в это время";
+        Axios.get("/api/teacher/").then(value => {
           t.names = value.data;
         });
         Axios.get("/api/lesson/?dtype=t").then(value => {
           t.shedule = value.data;
         });
-        Axios.get("/api/group").then(value => {
-          t.toSend = value.data;
+        Axios.get("/api/group/").then(value => {
+          t.toSend.names = value.data;
         });
       }
+      Axios.get("/api/lecture_hall/").then(value => {
+        t.toSend.room = value.data;
+      });
+      Axios.get("/api/discipline/").then(value => {
+        t.toSend.discipline = value.data;
+      });
       this.type = cur_rout;
     }
   },
+  // created() {
+  //   document.addEventListener("mouseup", e => {
+  //     var div = document.getElementById("inputCard"); // тут указываем ID элемента
+  //     if (!div.is(e.target)) {
+  //       // и не по его дочерним элементам
+  //       this.remove();
+  //     }
+  //   });
+  // },
   methods: {
-    create() {
+    update() {
+      if (this.link == "group") {
+        Axios.get("/api/lesson/?dtype=g").then(value => {
+          this.shedule = value.data;
+        });
+      } else if (this.link == "teacher") {
+        Axios.get("/api/lesson/?dtype=t").then(value => {
+          this.shedule = value.data;
+        });
+      }
+    },
+    create(g_t_type, lesson, room, dow_les, id) {
       //Axios.post("/api/lesson/",{discipline_id: 1, group_id: 1, teacher_id: 1, lecture_hall_id: 1});
       //Axios.get("/api/lesson/?dtype=g");
       //Axios.put("/api/lesson/187");
@@ -255,6 +333,12 @@ export default {
       this.left = event.clientX;
       this.top = event.clientY;
       this.seen = true;
+      this.toSend.type = g_t_type;
+      this.toSend.shedule = this.shedule[id];
+      this.toSend.lesson = lesson;
+      this.toSend.rooms = room;
+      this.toSend.dow_les = dow_les;
+      this.toSend.id = id;
     },
     matchWidth() {
       return this.$refs.inputCard.clientWidth;
@@ -262,26 +346,22 @@ export default {
     remove() {
       this.seen = false;
     },
-    submit() {
-      this.toSend.group = this.$refs.optGroup.value;
-      this.toSend.discipline = this.$refs.optDiscipline.value;
-      console.log(this.toSend.group, this.toSend.discipline);
-    },
     find() {
+      if (!this.v) this.v = true;
       if (this.$route.params.type) {
         var toFind = "";
         var toFind2 = "";
         if (this.$route.params.type == "teacher") {
-          toFind = "/api/teacher/?last_name=";
-          toFind2 = "/api/lesson/?dtype=t&&teacher=";
+          toFind = "/api/teacher/?name=";
+          toFind2 = "/api/lesson/?dtype=t&teacher=";
         } else if (this.$route.params.type == "group") {
           toFind = "/api/group/?code=";
-          toFind2 = "/api/lesson/?dtype=g&&group=";
+          toFind2 = "/api/lesson/?dtype=g&group=";
         }
-        Axios.get(toFind + this.code).then(value => {
+        Axios.get(toFind + this.code.split(" ").join(",")).then(value => {
           this.names = value.data;
         });
-        Axios.get(toFind2 + this.code).then(value => {
+        Axios.get(toFind2 + this.code.split(" ").join(",")).then(value => {
           this.shedule = value.data;
         });
       } else {
@@ -290,15 +370,23 @@ export default {
         });
       }
     },
+    async show() {
+      await find();
+      this.display();
+    },
     display() {
       Axios.get("/api/lesson/?group=" + this.code).then(value => {
         this.shedule = value.data;
       });
+      this.v = false;
     }
   }
 };
 </script>
 <style>
+.card {
+  border-radius: 0 !important;
+}
 .layer {
   overflow-y: scroll; /* Добавляем полосы прокрутки */
   width: 100%; /* Ширина блока */
@@ -320,7 +408,7 @@ export default {
 }
 
 tbody > tr {
-  height: 175px !important;
+  height: 140px !important;
 }
 .temp {
   width: 130px;

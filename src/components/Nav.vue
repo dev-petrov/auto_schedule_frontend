@@ -1,11 +1,12 @@
  <template>
   <nav class="navbar navbar-dark sticky-top navbar-expand-md bg-dark">
-    <a href="/" class="navbar-brand">
-      <h5>
-        <p>
-          <span id="text">ss</span>
-        </p>
-      </h5>
+    <a href="/" class="navbar-brand ml-3">
+      <!-- <h5> -->
+        <!-- <p> -->
+          <!-- <span id="text">Расписание</span> -->
+          <img src="../assets/logos.png" alt="Расписание" style="height:55px">
+        <!-- </p> -->
+      <!-- </h5> -->
     </a>
     <button
       class="navbar-toggler"
