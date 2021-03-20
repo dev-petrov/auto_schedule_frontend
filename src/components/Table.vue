@@ -3,190 +3,157 @@
     <div class="container">
       <div class="input-group mb-3 mt-3">
         <div class="input-group-prepend">
-          <span class="input-group-text" id="code">Группа</span>
+          <span class="input-group-text" id="code">{{
+            dtype == TYPE_TEACHER ? "Преподаватель" : "Группа"
+          }}</span>
         </div>
         <input
           type="text"
           class="form-control"
-          placeholder="code"
+          :placeholder="
+            dtype == TYPE_TEACHER ? 'ФИО преподавателя' : 'Код группы'
+          "
           aria-label="code"
           aria-describedby="code"
           v-model="code"
         />
       </div>
-      <div class="d-flex" v-if="!this.$route.params.type&&code!=''&&v">
+      <div class="d-flex" v-if="!this.$route.params.type && code != '' && v">
         <p>
           <button
             v-for="name in names"
             :key="name.id"
             class="mr-1 btn btn-link btn-sm"
-            @click="code=name.code;show()"
-          >{{name.code}}</button>
+            @click="
+              code = name.code;
+              show();
+            "
+          >
+            {{ name.code }}
+          </button>
         </p>
       </div>
     </div>
-    <div
-      class="layer container"
-      scrolling="auto"
-      v-if="this.$route.params.type"
-      style="height: 400px; padding: 0 !important;"
-    >
-      <!-- таблицы редактирования-->
-      <tr class="d-flex mb-3" id="table">
-        <td>
+    <div v-if="loaded" class="d-flex" style="max-height: 500px">
+      <div style="width: 15%">
+        <div>
           <table class="table table-bordered">
             <thead class="thead">
               <tr>
-                <th scope="col">Именование</th>
+                <th scope="col">
+                  {{ dtype == TYPE_GROUP ? "Группы" : "Преподаватели" }}
+                </th>
+              </tr>
+              <tr>
+                <th scope="col">{{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}</th>
               </tr>
             </thead>
+          </table>
+        </div>
+        <div ref="names" style="overflow-y: hidden; max-height: 488px">
+          <table class="table table-bordered">
             <tbody class="tbody">
               <tr v-for="name in names" :key="name.id">
                 <th scope="row">
-                  <p>
-                    {{name.code}}{{ name.last_name }}
+                  <p class="text-center">
+                    {{ name.code }}{{ name.last_name }}
                     <br />
-                    {{name.first_name}}
+                    {{ name.first_name }}
                     <br />
-                    {{name.middle_name}}
+                    {{ name.middle_name }}
                   </p>
                 </th>
               </tr>
             </tbody>
           </table>
-        </td>
-        <td class="div_flow">
+        </div>
+      </div>
+      <div style="width: 85%">
+        <div style="overflow: hidden" ref="times">
           <table class="table table-bordered">
             <thead class="thead">
               <tr>
                 <th scope="col" colspan="7" v-for="day in days" :key="day.id">
-                  <span>{{day_of_week.get(day)}}</span>
+                  <span>{{ day_of_week[day] }}</span>
                 </th>
               </tr>
+              <tr>
+                <template v-for="(day, i) in days">
+                  <th v-for="(time, index) in times" :key="`${index}&${day}&${i}`">
+                    {{ time }}
+                  </th>
+                </template>
+              </tr>
             </thead>
+          </table>
+        </div>
+        <div class="layer" @scroll="scrollTable">
+          <table class="table table-bordered">
             <tbody class="tbody">
               <tr v-for="name in names" :key="name.id">
-                <template v-for="(day, i) in 6">
+                <template v-for="day in days">
                   <cell
                     v-for="(time, index) in times"
-                    :key="index + i"
-                    :info="[time, shedule[name.id], day, index+1,type, name.id]"
+                    :key="`${name.id}&${day}&${index + 1}`"
+                    :schedule="
+                      schedule[String(name.id)][String(day)][String(index + 1)]
+                    "
+                    :type="dtype"
+                    :person_id="name.id"
                     @create="create"
                   />
                 </template>
               </tr>
             </tbody>
           </table>
-        </td>
-      </tr>
-    </div>
-    <!-- Пиши ниже -->
-    <div v-else-if="shedule" class="container">
-      <!-- Окно расписания -->
-      <div class="d-flex flex-row row justify-content-around">
-        <div class="d-flex flex-column col-lg-4 col-xs-6 mb-3" v-for="day in days" :key="day.id">
-          <thead class="thead card-header p-3">
-            <th scope="col">{{day_of_week.get(day)}}</th>
-          </thead>
-          <SimpleCell
-            class="card"
-            v-for="(time,index) in times"
-            :key="index"
-            :info="[time, shedule, day, index+1, names]"
-          ></SimpleCell>
         </div>
+      </div>
+    </div>
+    <div
+      class="layer mb-0 d-flex justify-content-center align-items-center"
+      v-else-if="this.$route.params.type"
+      style="padding: 0 !important"
+    >
+      <div
+        class="spinner-grow text-primary"
+        style="width: 5rem; height: 5rem"
+        role="status"
+      >
+        <span class="sr-only">Loading...</span>
       </div>
     </div>
     <FormLesson
-      :mouseup="function (e){}"
-      :info="[toSend]"
+      :mouseup="function (e) {}"
+      :lesson='editLesson'
       @removeCard="remove"
       @update="update()"
-      class="card"
       id="inputCard"
       ref="inputCard"
       :class="[seen ? '' : 'd-none']"
-      style="position: absolute; "
-      :style="{left: left + 'px', top: top + 'px' }"
+      style="position: absolute"
+      :style="{ left: left + 'px', top: top + 'px' }"
     ></FormLesson>
-    <FormRoom class="card d-none" style="position: absolute;"></FormRoom>
-    <Plan class="card d-none" style="position: absolute;"></Plan>
-    <Group class="card d-none" style="position: absolute;"></Group>
-    <Flow class="card d-none" style="position:absolute;"></Flow>
-    <Direction class="card d-none" style="position:absolute;"></Direction>
-    <Discipline class="card d-none" style="position:absolute;"></Discipline>
-    <Teacher class="card d-none" style="position:absolute;"></Teacher>
-    <div
-      class="modal fade"
-      tabindex="-1"
-      id="myModal"
-      role="dialog"
-      aria-labelledby="myLargeModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ошибка!</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true" style="font-size: 20px">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">{{err_mess}}</div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
 import Cell from "./Cell";
-import SimpleCell from "./SimpleCell";
 import FormLesson from "./forms/Lesson";
-import FormRoom from "./forms/Room";
-import Plan from "./forms/Plan";
-import Group from "./forms/Group";
-import Flow from "./forms/Flow";
-import Direction from "./forms/Diretion";
-import Discipline from "./forms/Discipline";
-import Teacher from "./forms/Teacher";
-import Axios from "axios";
-import auth from "../auth";
-import defaults_ru from "../data/defaults_ru"
+import defaults_ru from "../data/defaults_ru";
+import http from "../http";
+
 export default {
   components: {
     Cell,
     FormLesson,
-    FormRoom,
-    Plan,
-    Group,
-    Flow,
-    Direction,
-    Discipline,
-    Teacher,
-    SimpleCell
   },
   data() {
     return {
-      v: true,
-      err_mess: "",
-      type: "",
+      loaded: false,
       code: "",
-      auth: auth,
-      names: [],
       day_of_week: defaults_ru.day_of_week,
-      groups: [
-        {
-          id: "1",
-          code: "181-351",
-          training_direction: "IS"
-        },
-        {
-          id: "2",
-          code: "181-352",
-          training_direction: "IB"
-        }
-      ],
-      shedule: false,
+      TYPE_GROUP: "group",
+      TYPE_TEACHER: "teacher",
+      dtype: "group",
       times: [
         "9:00-10:30",
         "10:40-12:10",
@@ -194,151 +161,76 @@ export default {
         "14:30-16:00",
         "16:10-17:40",
         "17:50-19:20",
-        "19:30-21:00"
+        "19:30-21:00",
       ],
       days: [1, 2, 3, 4, 5, 6],
       width: 0,
       seen: false,
       left: 0,
       top: 0,
-      toSend: {
-        shedule: "",
-        type: "",
-        names: "",
-        lesson: "",
-        room: "",
-        rooms: "",
-        discipline: "",
-        dow_les: "",
-        id: ""
-      }
+      editLesson: {},
     };
   },
   watch: {
-    code() {
-      this.find();
+    $route() {
+      this.dtype = this.$route.query.dtype
+        ? this.$route.query.dtype
+        : this.TYPE_GROUP;
     },
-    link() {
-      this.code = "";
-      if (!this.$route.params.type) {
-        this.names = [];
-        this.shedule = false;
-      } else if (this.$route.params.type == "group") {
-        this.err_mess = "У данного преподавателя уже есть занятие в это время";
-        Axios.get("/api/group/").then(value => {
-          this.names = value.data;
-        });
-        Axios.get("/api/lesson/?dtype=g").then(value => {
-          this.shedule = value.data;
-        });
-
-        Axios.get("/api/lecture_hall/").then(value => {
-          this.toSend.room = value.data;
-        });
-        Axios.get("/api/teacher/").then(value => {
-          this.toSend.names = value.data;
-        });
-        Axios.get("/api/discipline/").then(value => {
-          this.toSend.discipline = value.data;
-        });
-      } else if (this.$route.params.type == "teacher") {
-        this.err_mess = "У данной группы уже есть занятие в это время";
-        Axios.get("/api/teacher/").then(value => {
-          this.names = value.data;
-        });
-        Axios.get("/api/lesson/?dtype=t").then(value => {
-          this.shedule = value.data;
-        });
-        Axios.get("/api/group/").then(value => {
-          this.toSend.names = value.data;
-        });
-        Axios.get("/api/lecture_hall/").then(value => {
-          this.toSend.room = value.data;
-        });
-        Axios.get("/api/discipline/").then(value => {
-          this.toSend.discipline = value.data;
-        });
-      }
-      this.type = this.$route.params.type;
-    }
   },
   computed: {
-    link: function() {
-      return this.$route.params.type;
-    }
-  },
-  beforeMount() {
-    if (this.$route.params.type) {
-      var t = this;
-      var cur_rout = this.$route.params.type + "";
-      var toSend = "/api/" + cur_rout;
-      if (cur_rout == "group") {
-        t.err_mess = "У данного преподавателя уже есть занятие в это время";
-        Axios.get(toSend).then(value => {
-          t.names = value.data;
-        });
-        Axios.get("/api/lesson/?dtype=g").then(value => {
-          t.shedule = value.data;
-        });
-        Axios.get("/api/teacher/").then(value => {
-          t.toSend.names = value.data;
-        });
-      } else if (cur_rout == "teacher") {
-        t.err_mess = "У данной группы уже есть занятие в это время";
-        Axios.get("/api/teacher/").then(value => {
-          t.names = value.data;
-        });
-        Axios.get("/api/lesson/?dtype=t").then(value => {
-          t.shedule = value.data;
-        });
-        Axios.get("/api/group/").then(value => {
-          t.toSend.names = value.data;
-        });
+    names: function () {
+      if (this.dtype == this.TYPE_TEACHER)
+        return this.$store.state.teachers.filter((v) =>
+          v.last_name.toLowerCase().includes(this.code.toLowerCase()) ||
+          v.first_name.toLowerCase().includes(this.code.toLowerCase()) ||
+          v.middle_name.toLowerCase().includes(this.code.toLowerCase())
+        );
+      else
+        return this.$store.state.groups.filter((v) =>
+          v.code.includes(this.code)
+        );
+    },
+    schedule: function(){
+      if (this.dtype == this.TYPE_GROUP) {
+        return this.$store.state.lessons_by_groups;
+      } else if (this.dtype == this.TYPE_TEACHER) {
+        return this.$store.state.lessons_by_teachers;
       }
-      Axios.get("/api/lecture_hall/").then(value => {
-        t.toSend.room = value.data;
-      });
-      Axios.get("/api/discipline/").then(value => {
-        t.toSend.discipline = value.data;
-      });
-      this.type = cur_rout;
+      return {};
     }
   },
-  // created() {
-  //   document.addEventListener("mouseup", e => {
-  //     var div = document.getElementById("inputCard"); // тут указываем ID элемента
-  //     if (!div.is(e.target)) {
-  //       // и не по его дочерним элементам
-  //       this.remove();
-  //     }
-  //   });
-  // },
+  async beforeMount() {
+    await this.$store.dispatch("setSchedule");
+    await this.$store.dispatch("setTeachers");
+    await this.$store.dispatch("setLectureHalls");
+    this.dtype = this.$route.query.dtype
+      ? this.$route.query.dtype
+      : this.TYPE_GROUP;
+    this.loaded = true;
+  },
   methods: {
-    update() {
-      if (this.link == "group") {
-        Axios.get("/api/lesson/?dtype=g").then(value => {
-          this.shedule = value.data;
-        });
-      } else if (this.link == "teacher") {
-        Axios.get("/api/lesson/?dtype=t").then(value => {
-          this.shedule = value.data;
-        });
+    scrollTable(e) {
+      this.$refs["names"].scrollTop = e.target.scrollTop;
+      this.$refs["times"].scrollLeft = e.target.scrollLeft;
+    },
+    async update() {
+      if (this.link == this.TYPE_GROUP) {
+        this.schedule = await http.getSchedule("g");
+      } else if (this.link == this.TYPE_TEACHER) {
+        this.schedule = await http.getSchedule("t");
       }
     },
-    create(g_t_type, lesson, room, dow_les, id) {
-      //Axios.post("/api/lesson/",{discipline_id: 1, group_id: 1, teacher_id: 1, lecture_hall_id: 1});
-      //Axios.get("/api/lesson/?dtype=g");
-      //Axios.put("/api/lesson/187");
-      if (this.width == 0) this.width = this.matchWidth();
-      this.left = event.clientX;
-      this.top = event.clientY;
+    create(lesson) {
+      if (this.width == 0) this.width = this.matchWidth();      
+      var target = event.target;
+      while(target.tagName != "TD") {
+        target = target.parentElement;
+      }
+      this.left = target.getBoundingClientRect().left;
+      this.top = target.getBoundingClientRect().top;
+      this.editLesson = lesson;
       this.seen = true;
-      this.toSend.type = g_t_type;
-      this.toSend.shedule = this.shedule[id];
-      this.toSend.lesson = lesson;
-      this.toSend.rooms = room;
-      this.toSend.dow_les = dow_les;
-      this.toSend.id = id;
     },
     matchWidth() {
       return this.$refs.inputCard.clientWidth;
@@ -346,41 +238,7 @@ export default {
     remove() {
       this.seen = false;
     },
-    find() {
-      if (!this.v) this.v = true;
-      if (this.$route.params.type) {
-        var toFind = "";
-        var toFind2 = "";
-        if (this.$route.params.type == "teacher") {
-          toFind = "/api/teacher/?name=";
-          toFind2 = "/api/lesson/?dtype=t&teacher=";
-        } else if (this.$route.params.type == "group") {
-          toFind = "/api/group/?code=";
-          toFind2 = "/api/lesson/?dtype=g&group=";
-        }
-        Axios.get(toFind + this.code.split(" ").join(",")).then(value => {
-          this.names = value.data;
-        });
-        Axios.get(toFind2 + this.code.split(" ").join(",")).then(value => {
-          this.shedule = value.data;
-        });
-      } else {
-        Axios.get("/api/group/?code=" + this.code).then(value => {
-          this.names = value.data;
-        });
-      }
-    },
-    async show() {
-      await find();
-      this.display();
-    },
-    display() {
-      Axios.get("/api/lesson/?group=" + this.code).then(value => {
-        this.shedule = value.data;
-      });
-      this.v = false;
-    }
-  }
+  },
 };
 </script>
 <style>
@@ -388,10 +246,10 @@ export default {
   border-radius: 0 !important;
 }
 .layer {
-  overflow-y: scroll; /* Добавляем полосы прокрутки */
+  /* overflow-y: scroll; Добавляем полосы прокрутки */
+  overflow: auto;
   width: 100%; /* Ширина блока */
-  height: 550px; /* Высота блока */
-  border: 2px solid #f5f5f5;
+  height: 100%; /* Высота блока */
 }
 .div_flow {
   overflow-x: scroll;
@@ -407,9 +265,22 @@ export default {
   margin: 0;
 }
 
-tbody > tr {
-  height: 140px !important;
+thead > tr {
+  height: 20px !important;
 }
+thead > tr > th {
+  min-width: 200px !important;
+}
+
+tbody > tr {
+  height: 120px !important;
+}
+
+tbody > tr > td {
+  max-width: 200px !important;
+  min-width: 200px !important;
+}
+
 .temp {
   width: 130px;
 }
