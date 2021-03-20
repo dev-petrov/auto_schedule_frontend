@@ -12,26 +12,28 @@
       </div>
       <input type="password" class="form-control" id="in-pass" v-model="password" />
     </div>
-    <button @click="login" class="btn btn-block btn-primary">Submit</button>
-    <p v-if="seen">Неправильный логин или пароль</p>
+    <button @click="login" class="btn btn-block btn-primary">Войти</button>
   </div>
 </template>
 
 <script>
-import auth from "../auth";
 export default {
   data() {
     return {
       username: "",
       password: "",
-      seen: false
     };
   },
   methods: {
-    login() {
-      auth.login(this.username, this.password);
-      this.seen = true;
+    async login() {
+      await this.$store.dispatch('login', {username:this.username, password:this.password});
+      this.$router.replace({name: 'Home'}) // table
     },
+  },
+  beforeMount() {
+    if (this.$store.state.isAuthenticated) {
+      this.$router.replace({name: 'Home'})
+    }
   }
 };
 </script>

@@ -1,30 +1,44 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-//import VueRouterPermissions from "vue-router-permissions";
 import Axios from 'axios';
-import auth from './auth';
 import VueCookies from 'vue-cookies'
+import { BootstrapVue } from 'bootstrap-vue'
+import ErrorModal from './plugins/ErrorModal'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import store from './store';
+import VueScrollTo from 'vue-scrollto'
 
+
+
+Vue.use(ErrorModal)
+Vue.use(VueScrollTo)
 Vue.use(VueCookies)
-Vue.config.productionTip = false
-//Vue.use(VueRouterPermissions, router); 
-auth.checkAuth().then(()=> {new Vue({
-  router,
-  render: h => h(App)
-}).$mount('#app')});
-Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken'); 
+Vue.use(BootstrapVue)
 
-/*let getUser = Axios.get("/api/auth/user/");
-getUser.then(user => {
-  user = user.data;
-  if("detail" in user)
-    user = {role:"guest"}
-  else
-    user = {role:"login"}
-  Vue.prototype.$user = user;
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!store.state.isAuthenticated) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+Vue.config.productionTip = false
+store.dispatch('checkAuth').then(() => {
   new Vue({
-    render: h => h(App),
-    router
-  }).$mount("#app");
-});*/
+    router,
+    store: store,
+    render: h => h(App)
+  }).$mount('#app')
+})
+Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
+Axios.defaults.headers.common['Content-Type'] = 'application/json';
