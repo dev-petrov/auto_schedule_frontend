@@ -54,15 +54,20 @@
           <table class="table table-bordered">
             <tbody class="tbody">
               <tr v-for="name in names" :key="name.id">
-                <th scope="row">
+                <!--<th scope="row">
                   <p class="text-center">
                     {{ name.code }}{{ name.last_name }}
                     <br />
                     {{ name.first_name }}
                     <br />
                     {{ name.middle_name }}
-                  </p>
-                </th>
+                  </p>-->
+                  <TeacherCell v-if="dtype != TYPE_GROUP" :name='name' @setModal='setModal'/>
+                  <GroupCell v-else :name='name' @setModal='setModal'/>
+                <!--</th>
+                <th style=>
+                  <b-table striped hover :items="times"></b-table> 
+                </th>-->
               </tr>
             </tbody>
           </table>
@@ -133,18 +138,34 @@
       style="position: absolute"
       :style="{ left: left + 'px', top: top + 'px' }"
     ></FormLesson>
+    <ModalTeacher
+      id="modalTeacher"
+      :name = names[id]
+    />
+    <ModalGroup
+      id="modalGroup"
+      :name = names[id]
+    />
   </div>
 </template>
 <script>
-import Cell from "./Cell";
+import Cell from "./cells/Cell";
 import FormLesson from "./forms/Lesson";
 import defaults_ru from "../data/defaults_ru";
 import http from "../http";
+import TeacherCell from "./cells/TeacherCell"
+import GroupCell from "./cells/GroupCell"
+import ModalTeacher from "./modals/ModalTeacher"
+import ModalGroup from "./modals/ModalGroup"
 
 export default {
   components: {
     Cell,
     FormLesson,
+    TeacherCell,
+    GroupCell,
+    ModalTeacher,
+    ModalGroup
   },
   data() {
     return {
@@ -169,6 +190,7 @@ export default {
       left: 0,
       top: 0,
       editLesson: {},
+      id:0
     };
   },
   watch: {
@@ -176,6 +198,7 @@ export default {
       this.dtype = this.$route.query.dtype
         ? this.$route.query.dtype
         : this.TYPE_GROUP;
+      this.showModal()
     },
   },
   computed: {
@@ -238,6 +261,28 @@ export default {
     remove() {
       this.seen = false;
     },
+    setModal(id){
+      this.$router.replace({
+        name: this.$route.name,
+        query: {
+          ...this.$route.query,
+          id: id,
+          modalType: this.dtype == this.TYPE_TEACHER ? 'teacherModal' : 'groupModal'
+        } 
+      })
+    },
+    showModal() {
+      var modalType = this.$route.query.modalType;
+      this.id = this.$route.query.id;
+      if (modalType === 'teacherModal' && this.id){
+        this.$bvModal.show('modalTeacher')
+        this.id--
+      }
+      else if (modalType === 'groupModal' && this.id){
+        this.$bvModal.show('modalGroup')
+        this.id--
+      }
+    }
   },
 };
 </script>
