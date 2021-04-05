@@ -68,7 +68,6 @@ export default {
     showModal() {
       var modalType = this.$route.query.modalType;
       this.id = this.$route.query.id;
-      console.log(this.names[this.id])
       if (modalType === 'teacherModal' && this.id){
         this.$bvModal.show('modalTeacher')
         this.id--

@@ -140,11 +140,11 @@
     ></FormLesson>
     <ModalTeacher
       id="modalTeacher"
-      :name = names[id]
+      :teacherID = teacherID
     />
     <ModalGroup
       id="modalGroup"
-      :name = names[id]
+      :groupID = groupID
     />
   </div>
 </template>
@@ -190,7 +190,8 @@ export default {
       left: 0,
       top: 0,
       editLesson: {},
-      id:0
+      teacherID:0,
+      groupID:0
     };
   },
   watch: {
@@ -231,6 +232,7 @@ export default {
       ? this.$route.query.dtype
       : this.TYPE_GROUP;
     this.loaded = true;
+    this.showModal()
   },
   methods: {
     scrollTable(e) {
@@ -273,16 +275,17 @@ export default {
     },
     showModal() {
       var modalType = this.$route.query.modalType;
-      this.id = this.$route.query.id;
-      if (modalType === 'teacherModal' && this.id){
+      var id = this.$route.query.id;
+      if (modalType === 'teacherModal' && id){
+        this.teacherID = id
         this.$bvModal.show('modalTeacher')
-        this.id--
       }
-      else if (modalType === 'groupModal' && this.id){
+      else if (modalType === 'groupModal' && id){
+        this.groupID = id
         this.$bvModal.show('modalGroup')
-        this.id--
       }
-    }
+    },
+    
   },
 };
 </script>
