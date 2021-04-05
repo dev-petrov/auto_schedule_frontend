@@ -263,16 +263,6 @@ export default {
     remove() {
       this.seen = false;
     },
-    setModal(id){
-      this.$router.replace({
-        name: this.$route.name,
-        query: {
-          ...this.$route.query,
-          id: id,
-          modalType: this.dtype == this.TYPE_TEACHER ? 'teacherModal' : 'groupModal'
-        } 
-      })
-    },
     showModal() {
       var modalType = this.$route.query.modalType;
       var id = this.$route.query.id;
