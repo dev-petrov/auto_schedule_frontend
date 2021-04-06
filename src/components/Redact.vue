@@ -5,7 +5,12 @@
       </b-input-group>
       
       <b-row align-h="around">
-            <redact-card v-for="name in displayNames" :key="name.id" :name="name"></redact-card>
+        <template v-if="this.$route.name == 'teachers'">
+          <RedactTeacher v-for="name in displayNames" :key="name.id" :name="name"/>
+        </template>
+        <template v-else>
+          <RedactGroup v-for="name in displayNames" :key="name.id" :name="name"/>
+        </template>   
       </b-row>
        
       <b-pagination
@@ -22,23 +27,31 @@
     ></b-pagination>
     <ModalTeacher
       id="modalTeacher"
-      :name = names[id]
+      :teacherID = teacherID
+    />
+    <ModalGroup
+      id="modalGroup"
+      :groupID = groupID
     />
     </b-container>
 </template>
 <script>
-import RC from "./CardTeacher.vue";
+import CT from "./CardTeacher.vue";
+import CG from "./CardGroup.vue"
 import ModalTeacher from "./modals/ModalTeacher.vue";
+import ModalGroup from "./modals/ModalGroup";
 export default {
   name: "redact",
-  components: { "redact-card": RC, ModalTeacher },
+  components: { RedactTeacher: CT, RedactGroup: CG, ModalTeacher, ModalGroup },
   data() {
     return {
       currentPage: 1,
       perPage: 3,
       displayNames: 0,
-      param:this.$route.name,
-      id: 0
+      param: this.$route.name,
+      id: 0,
+      teacherID: 0,
+      groupID: 0,
     };
   },
   computed: {
@@ -49,13 +62,12 @@ export default {
   },
   watch: {
     $route() {
-      this.param = this.$route.name
+      this.param = this.$route.name;
       this.paginate(this.currentPage);
-      this.showModal()
+      this.showModal();
     },
   },
   async beforeMount() {
-    await this.$store.dispatch("setSchedule");
     await this.$store.dispatch("setTeachers");
     await this.$store.dispatch("setLectureHalls");
     await this.$store.dispatch("setDisciplines");
@@ -67,10 +79,13 @@ export default {
     },
     showModal() {
       var modalType = this.$route.query.modalType;
-      this.id = this.$route.query.id;
-      if (modalType === 'teacherModal' && this.id){
-        this.$bvModal.show('modalTeacher')
-        this.id--
+      var id = this.$route.query.id;
+      if (modalType === "teacherModal" && id) {
+        this.teacherID = id;
+        this.$bvModal.show("modalTeacher");
+      } else if (modalType === "groupModal" && id) {
+        this.groupID = id;
+        this.$bvModal.show("modalGroup");
       }
     },
   },
