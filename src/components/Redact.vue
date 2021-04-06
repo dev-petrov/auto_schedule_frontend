@@ -71,6 +71,7 @@ export default {
     await this.$store.dispatch("setTeachers");
     await this.$store.dispatch("setLectureHalls");
     await this.$store.dispatch("setDisciplines");
+    this.showModal()
   },
   methods: {
     paginate(currentPage) {
