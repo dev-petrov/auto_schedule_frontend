@@ -8,7 +8,7 @@
         <template v-if="this.$route.name == 'teachers'">
           <RedactTeacher v-for="name in displayNames" :key="name.id" :name="name"/>
         </template>
-        <template v-else>
+        <template v-else-if="this.$route.name == 'groups'">
           <RedactGroup v-for="name in displayNames" :key="name.id" :name="name"/>
         </template>   
       </b-row>
