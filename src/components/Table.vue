@@ -100,6 +100,8 @@
                     "
                     :type="dtype"
                     :person_id="name.id"
+                    :day="day"
+                    :lesson_num="index + 1"
                     @create="create"
                   />
                 </template>
