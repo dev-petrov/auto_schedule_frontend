@@ -13,7 +13,7 @@
           lesson.teacher.middle_name[0]
         }}.
       </p>
-      <p id="discipline" class="text-truncate">{{ lesson.discipline.title }}</p>
+      <p id="discipline" class="text-truncate text-center" v-b-tooltip.hover :title="lesson.discipline.title">{{ lesson.discipline.title }}</p>
       <p id="lecture_hall">
         <b>{{ lesson.lecture_hall.code }}</b>
       </p>
@@ -47,7 +47,7 @@ export default {
           middle_name: "",
         },
         discipline: {
-          title: "Нет данных",
+          title: "НД",
         },
         day_of_week: this.day,
         lesson: this.lesson_num,
