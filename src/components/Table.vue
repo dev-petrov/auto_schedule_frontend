@@ -62,8 +62,12 @@
                     <br />
                     {{ name.middle_name }}
                   </p>-->
-                  <TeacherCell v-if="dtype != TYPE_GROUP" :name='name' @setModal='setModal'/>
-                  <GroupCell v-else :name='name' @setModal='setModal'/>
+                <TeacherCell
+                  v-if="dtype != TYPE_GROUP"
+                  :name="name"
+                  @setModal="setModal"
+                />
+                <GroupCell v-else :name="name" @setModal="setModal" />
                 <!--</th>
                 <th style=>
                   <b-table striped hover :items="times"></b-table> 
@@ -84,7 +88,10 @@
               </tr>
               <tr>
                 <template v-for="(day, i) in days">
-                  <th v-for="(time, index) in times" :key="`${index}&${day}&${i}`">
+                  <th
+                    v-for="(time, index) in times"
+                    :key="`${index}&${day}&${i}`"
+                  >
                     {{ time }}
                   </th>
                 </template>
@@ -129,7 +136,7 @@
     </div>
     <FormLesson
       :mouseup="function (e) {}"
-      :lesson='editLesson'
+      :lesson="editLesson"
       @removeCard="remove"
       @update="update()"
       id="inputCard"
@@ -138,14 +145,8 @@
       style="position: absolute"
       :style="{ left: left + 'px', top: top + 'px' }"
     ></FormLesson>
-    <ModalTeacher
-      id="modalTeacher"
-      :teacherID = teacherID
-    />
-    <ModalGroup
-      id="modalGroup"
-      :groupID = groupID
-    />
+    <ModalTeacher id="modalTeacher" :teacherID="teacherID" />
+    <ModalGroup id="modalGroup" :groupID="groupID" />
   </div>
 </template>
 <script>
@@ -153,10 +154,10 @@ import Cell from "./cells/Cell";
 import FormLesson from "./forms/Lesson";
 import defaults_ru from "../data/defaults_ru";
 import http from "../http";
-import TeacherCell from "./cells/TeacherCell"
-import GroupCell from "./cells/GroupCell"
-import ModalTeacher from "./modals/ModalTeacher"
-import ModalGroup from "./modals/ModalGroup"
+import TeacherCell from "./cells/TeacherCell";
+import GroupCell from "./cells/GroupCell";
+import ModalTeacher from "./modals/ModalTeacher";
+import ModalGroup from "./modals/ModalGroup";
 
 export default {
   components: {
@@ -165,7 +166,7 @@ export default {
     TeacherCell,
     GroupCell,
     ModalTeacher,
-    ModalGroup
+    ModalGroup,
   },
   data() {
     return {
@@ -190,8 +191,8 @@ export default {
       left: 0,
       top: 0,
       editLesson: {},
-      teacherID:0,
-      groupID:0
+      teacherID: 0,
+      groupID: 0,
     };
   },
   watch: {
@@ -199,40 +200,50 @@ export default {
       this.dtype = this.$route.query.dtype
         ? this.$route.query.dtype
         : this.TYPE_GROUP;
-      this.showModal()
+      this.showModal();
     },
   },
   computed: {
     names: function () {
       if (this.dtype == this.TYPE_TEACHER)
-        return this.$store.state.teachers.filter((v) =>
-          v.last_name.toLowerCase().includes(this.code.toLowerCase()) ||
-          v.first_name.toLowerCase().includes(this.code.toLowerCase()) ||
-          v.middle_name.toLowerCase().includes(this.code.toLowerCase())
+        return this.$store.state.teachers.filter(
+          (v) =>
+            v.last_name.toLowerCase().includes(this.code.toLowerCase()) ||
+            v.first_name.toLowerCase().includes(this.code.toLowerCase()) ||
+            v.middle_name.toLowerCase().includes(this.code.toLowerCase())
         );
       else
         return this.$store.state.groups.filter((v) =>
           v.code.includes(this.code)
         );
     },
-    schedule: function(){
+    schedule: function () {
       if (this.dtype == this.TYPE_GROUP) {
         return this.$store.state.lessons_by_groups;
       } else if (this.dtype == this.TYPE_TEACHER) {
         return this.$store.state.lessons_by_teachers;
       }
       return {};
-    }
+    },
   },
   async beforeMount() {
-    await this.$store.dispatch("setSchedule");
-    await this.$store.dispatch("setTeachers");
-    await this.$store.dispatch("setLectureHalls");
+    if (
+      !this.$store.state.lessons_by_groups.length ||
+      !this.$store.state.lessons_by_teachers.length
+    ) {
+      await this.$store.dispatch("setSchedule");
+    }
+    if (this.$store.state.teachers.length == 0) {
+      await this.$store.dispatch("setTeachers");
+    }
+    if (this.$store.state.lecture_halls.length == 0) {
+      await this.$store.dispatch("setLectureHalls");
+    }
     this.dtype = this.$route.query.dtype
       ? this.$route.query.dtype
       : this.TYPE_GROUP;
     this.loaded = true;
-    this.showModal()
+    this.showModal();
   },
   methods: {
     scrollTable(e) {
@@ -247,9 +258,9 @@ export default {
       }
     },
     create(lesson) {
-      if (this.width == 0) this.width = this.matchWidth();      
+      if (this.width == 0) this.width = this.matchWidth();
       var target = event.target;
-      while(target.tagName != "TD") {
+      while (target.tagName != "TD") {
         target = target.parentElement;
       }
       this.left = target.getBoundingClientRect().left;
@@ -266,16 +277,14 @@ export default {
     showModal() {
       var modalType = this.$route.query.modalType;
       var id = this.$route.query.id;
-      if (modalType === 'teacherModal' && id){
-        this.teacherID = id
-        this.$bvModal.show('modalTeacher')
-      }
-      else if (modalType === 'groupModal' && id){
-        this.groupID = id
-        this.$bvModal.show('modalGroup')
+      if (modalType === "teacherModal" && id) {
+        this.teacherID = id;
+        this.$bvModal.show("modalTeacher");
+      } else if (modalType === "groupModal" && id) {
+        this.groupID = id;
+        this.$bvModal.show("modalGroup");
       }
     },
-    
   },
 };
 </script>

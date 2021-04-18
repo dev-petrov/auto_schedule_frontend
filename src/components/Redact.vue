@@ -68,9 +68,15 @@ export default {
     },
   },
   async beforeMount() {
-    await this.$store.dispatch("setTeachers");
-    await this.$store.dispatch("setLectureHalls");
-    await this.$store.dispatch("setDisciplines");
+    if(this.$store.state.teachers.length == 0){
+      await this.$store.dispatch("setTeachers");
+    }
+    if(this.$store.state.lecture_halls.length == 0){
+      await this.$store.dispatch("setLectureHalls");
+    }
+    if(this.$store.state.disciplines.length == 0){
+      await this.$store.dispatch("setDisciplines");
+    }
     this.showModal()
   },
   methods: {
