@@ -36,6 +36,22 @@ let opts = {
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: "/groups",
+      name: "groups",
+      component: () => import('../components/Redact.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/teachers",
+      name: "teachers",
+      component: () => import('../components/Redact.vue'),
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 };

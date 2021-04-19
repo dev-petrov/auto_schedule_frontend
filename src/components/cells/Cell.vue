@@ -21,7 +21,7 @@
   </td>
 </template>
 <script>
-import defaults_ru from "../data/defaults_ru";
+import defaults_ru from "../../data/defaults_ru";
 export default {
   name: "cell",
   props: ["schedule", "type", "person_id", "day", "lesson_num"],

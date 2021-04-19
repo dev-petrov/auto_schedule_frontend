@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import SimpleCell from "./SimpleCell";
+import SimpleCell from "./cells/SimpleCell";
 import defaults_ru from "../data/defaults_ru";
 
 export default {
