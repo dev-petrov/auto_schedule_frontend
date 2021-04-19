@@ -20,7 +20,7 @@
   </tr>
 </template>
 <script>
-import defaults_ru from '../data/defaults_ru'
+import defaults_ru from '../../data/defaults_ru'
 export default {
   name: "cell",
   props: ["lesson", "time"],

@@ -48,6 +48,24 @@
             >Сменить на Преподаватели</router-link
           >
         </li>
+        <li class="nav-item">
+          <router-link
+            v-if="this.$route.name!='groups'"
+            to="/groups"
+            class="btn btn-info mb-3 mt-3 mr-2"
+          >
+            Группы
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <router-link
+            v-if="this.$route.name!='teachers'"
+            to="/teachers"
+            class="btn btn-info mb-3 mt-3 mr-2"
+          >
+            Преподаватели
+          </router-link>
+        </li>
       </ul>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item" v-if="$store.state.isAuthenticated">
