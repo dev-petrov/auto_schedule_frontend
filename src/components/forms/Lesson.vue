@@ -9,11 +9,11 @@
     </div>
     <div class="card-body">
       <div class="input-group mb-3" v-if="dtype == 'group'">
-        <div class="input-group-prepend">
+        <!-- <div class="input-group-prepend">
           <label class="input-group-text temp" for="opt-group"
             >Преподаватели</label
           >
-        </div>
+        </div> -->
         <select
           class="custom-select"
           id="opt-group"
@@ -27,9 +27,9 @@
         </select>
       </div>
       <div class="input-group mb-3" v-else>
-        <div class="input-group-prepend">
+        <!-- <div class="input-group-prepend">
           <label class="input-group-text temp" for="opt-group">Группы</label>
-        </div>
+        </div> -->
         <select
           class="custom-select"
           id="opt-group"
@@ -43,9 +43,9 @@
         </select>
       </div>
       <div class="input-group mb-3">
-        <div class="input-group-prepend">
+        <!-- <div class="input-group-prepend">
           <label class="input-group-text temp" for="opt-lesson">Предмет</label>
-        </div>
+        </div> -->
         <select
           class="custom-select"
           id="opt-lesson"
@@ -63,9 +63,9 @@
         </select>
       </div>
       <div class="input-group mb-3">
-        <div class="input-group-prepend">
+        <!-- <div class="input-group-prepend">
           <label class="input-group-text temp" for="opt-room">Аудитория</label>
-        </div>
+        </div> -->
         <select
           class="custom-select"
           id="opt-room"

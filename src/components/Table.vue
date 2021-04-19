@@ -35,7 +35,7 @@
       </div>
     </div>
     <div v-if="loaded" class="d-flex" style="max-height: 500px">
-      <div style="width: 15%">
+      <div style="width: 10%">
         <div>
           <table class="table table-bordered">
             <thead class="thead">
@@ -77,7 +77,7 @@
           </table>
         </div>
       </div>
-      <div style="width: 85%">
+      <div style="width: 90%">
         <div style="overflow: hidden" ref="times">
           <table class="table table-bordered">
             <thead class="thead">
@@ -179,13 +179,13 @@ export default {
       TYPE_TEACHER: "teacher",
       dtype: "group",
       times: [
-        "9:00-10:30",
-        "10:40-12:10",
-        "12:20-13:50",
-        "14:30-16:00",
-        "16:10-17:40",
-        "17:50-19:20",
-        "19:30-21:00",
+        "9:00",
+        "10:40",
+        "12:20",
+        "14:30",
+        "16:10",
+        "17:50",
+        "19:30",
       ],
       days: [1, 2, 3, 4, 5, 6],
       width: 0,
@@ -318,16 +318,16 @@ thead > tr {
   height: 20px !important;
 }
 thead > tr > th {
-  min-width: 200px !important;
+  min-width: 65px !important;
 }
 
 tbody > tr {
-  height: 120px !important;
+  height: 115px !important;
 }
 
 tbody > tr > td {
-  max-width: 200px !important;
-  min-width: 200px !important;
+  max-width: 65px !important;
+  min-width: 65px !important;
 }
 
 .temp {
