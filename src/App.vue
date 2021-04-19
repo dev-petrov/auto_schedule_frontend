@@ -22,6 +22,7 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch('setGroups');
+    await this.$store.dispatch('setBuildings');
   }
 }
 </script>

@@ -8,9 +8,17 @@
             lesson.teacher.middle_name[0]
           }}.
         </p>
-        <p id="discipline" class="text-truncate">{{ lesson.discipline.title }}</p>
+        <p id="discipline" class="text-truncate">
+          {{ lesson.discipline.title }}
+        </p>
         <p
-          :style="`color: ${colors[lesson.lecture_hall.building][0]};`"
+          :style="`color: ${
+            $store.state.buildings[
+              $store.state.buildings.findIndex(
+                (v) => v.id == lesson.lecture_hall.building_id
+              )
+            ].primary_color
+          };`"
           id="lecture_hall"
         >
           <b>{{ lesson.lecture_hall.code }}</b>
@@ -20,14 +28,14 @@
   </tr>
 </template>
 <script>
-import defaults_ru from '../../data/defaults_ru'
+import defaults_ru from "../../data/defaults_ru";
 export default {
   name: "cell",
   props: ["lesson", "time"],
-  data(){
+  data() {
     return {
       colors: defaults_ru.colors,
-    }
+    };
   },
   computed: {
     active: function () {

@@ -8,6 +8,7 @@ export default {
         Group: "/api/group/",
         Teacher: "/api/teacher/",
         Lesson: "/api/lesson/",
+        Building: "/api/building/",
     },
     getFilterValues: async function (filters) {
         var filter = "";

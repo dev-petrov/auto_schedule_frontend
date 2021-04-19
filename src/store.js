@@ -56,10 +56,14 @@ const store = new Vuex.Store({
         lessons_by_groups: {},
         lessons_by_teachers: {},
         lessons: null,
+        buildings: [],
     },
     mutations: {
         setDisciplines(state, disciplines) {
             state.disciplines = disciplines;
+        },
+        setBuildings(state, buildings) {
+            state.buildings = buildings;
         },
         setLectureHalls(state, lecture_halls) {
             state.lecture_halls = lecture_halls;
@@ -97,6 +101,10 @@ const store = new Vuex.Store({
         async setDisciplines(context) {
             var data = (await http.getList("Discipline", {}, true)).data;
             context.commit('setDisciplines', data);
+        },
+        async setBuildings(context) {
+            var data = (await http.getList("Building", {}, true)).data;
+            context.commit('setBuildings', data);
         },
         async setLectureHalls(context) {
             var data = (await http.getList("LectureHall", {}, true)).data;
