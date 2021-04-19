@@ -24,7 +24,7 @@
 import defaults_ru from "../../data/defaults_ru";
 export default {
   name: "cell",
-  props: ["schedule", "type", "person_id"],
+  props: ["schedule", "type", "person_id", "day", "lesson_num"],
   data() {
     return {
       colors: defaults_ru.colors,
@@ -49,6 +49,8 @@ export default {
         discipline: {
           title: "Нет данных",
         },
+        day_of_week: this.day,
+        lesson: this.lesson_num,
       };
       if (this.type == "group") {
         lesson.group_id = this.person_id;
