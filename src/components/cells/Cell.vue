@@ -2,9 +2,7 @@
   <td
     class="td_hover"
     @click="create"
-    :style="`background: ${colors[lesson.lecture_hall.building][0]}; color: ${
-      colors[lesson.lecture_hall.building][1]
-    };`"
+    :style="`background: ${lesson.lecture_hall.building.primary_color}; color: ${lesson.lecture_hall.building.secondary_color};`"
   >
     <span>
       <p v-if="type == 'teacher'" id="group">{{ lesson.group.code }}</p>
@@ -13,7 +11,14 @@
           lesson.teacher.middle_name[0]
         }}.
       </p>
-      <p id="discipline" class="text-truncate text-center" v-b-tooltip.hover :title="lesson.discipline.title">{{ lesson.discipline.title }}</p>
+      <p
+        id="discipline"
+        class="text-truncate text-center"
+        v-b-tooltip.hover
+        :title="lesson.discipline.title"
+      >
+        {{ lesson.discipline.short_name }}
+      </p>
       <p id="lecture_hall">
         <b>{{ lesson.lecture_hall.code }}</b>
       </p>
@@ -21,21 +26,21 @@
   </td>
 </template>
 <script>
-import defaults_ru from "../../data/defaults_ru";
 export default {
   name: "cell",
   props: ["schedule", "type", "person_id", "day", "lesson_num"],
   data() {
-    return {
-      colors: defaults_ru.colors,
-    };
+    return {};
   },
   computed: {
     lesson() {
       var lesson = {
         id: null,
         lecture_hall: {
-          building: "N",
+          building: {
+            primary_color: "#FFFFFF",
+            secondary_color: "#000000",
+          },
           code: "",
         },
         group: {
@@ -47,7 +52,8 @@ export default {
           middle_name: "",
         },
         discipline: {
-          title: "НД",
+          short_name: "НД",
+          title: "Нет данных",
         },
         day_of_week: this.day,
         lesson: this.lesson_num,
@@ -64,6 +70,11 @@ export default {
         lesson.lecture_hall_id = lesson.lecture_hall.id;
         lesson.group_id = lesson.group.id;
         lesson.teacher_id = lesson.teacher.id;
+        lesson.lecture_hall.building = this.$store.state.buildings[
+          this.$store.state.buildings.findIndex(
+            (v) => v.id == lesson.lecture_hall.building_id
+          )
+        ];
       }
       return lesson;
     },
