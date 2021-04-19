@@ -1,86 +1,62 @@
 <template>
-  <div class="card">
+  <div class="card" style='min-width: 300px'>
     <div class="card-header">
-      <button class="btn btn-secondary mr-1" v-if="lesson.id" @click="del">Удалить</button>
+      <button class="btn btn-secondary mr-1" v-if="lesson.id" @click="del">
+        Удалить
+      </button>
       <span v-if="seen">Все поля должны быть заполнены</span>
       <button class="close ml-1" id="btn-close" @click="remove">
         <span style="font-size: 20px !important">×</span>
       </button>
     </div>
     <div class="card-body">
-      <div class="input-group mb-3" v-if="dtype == 'group'">
-        <!-- <div class="input-group-prepend">
-          <label class="input-group-text temp" for="opt-group"
-            >Преподаватели</label
-          >
-        </div> -->
-        <select
-          class="custom-select"
-          id="opt-group"
-          ref="optGroup"
-          v-model="lesson.teacher_id"
-          :required="lesson.teacher_id"
-        >
-          <option v-for="(i, index) in teachers" :key="index" :value="i.id">
-            {{ i.name }}
-          </option>
-        </select>
-      </div>
-      <div class="input-group mb-3" v-else>
-        <!-- <div class="input-group-prepend">
-          <label class="input-group-text temp" for="opt-group">Группы</label>
-        </div> -->
-        <select
-          class="custom-select"
-          id="opt-group"
-          ref="optGroup"
-          v-model="lesson.group_id"
-          :required="lesson.group_id"
-        >
-          <option v-for="(i, index) in groups" :key="index" :value="i.id">
-            {{ i.name }}
-          </option>
-        </select>
-      </div>
-      <div class="input-group mb-3">
-        <!-- <div class="input-group-prepend">
-          <label class="input-group-text temp" for="opt-lesson">Предмет</label>
-        </div> -->
-        <select
-          class="custom-select"
-          id="opt-lesson"
-          ref="optDiscipline"
-          v-model="lesson.discipline_id"
-          :required="!lesson.discipline_id"
-        >
-          <option
-            v-for="(val, index) in disciplines"
-            :key="index"
-            :value="val.id"
-          >
-            {{ val.title }}
-          </option>
-        </select>
-      </div>
-      <div class="input-group mb-3">
-        <!-- <div class="input-group-prepend">
-          <label class="input-group-text temp" for="opt-room">Аудитория</label>
-        </div> -->
-        <select
-          class="custom-select"
-          id="opt-room"
-          v-model="lesson.lecture_hall_id"
-          :required="!lesson.lecture_hall_id"
-        >
-          <option
-            v-for="(i, index) in $store.state.lecture_halls"
-            :key="index"
-            :value="i.id"
-          >
-            {{ i.code }} ({{ i.spaciousness }})
-          </option>
-        </select>
-      </div>
+      <v-select
+        v-if="dtype == 'group'"
+        id="opt-group"
+        ref="optGroup"
+        class="my-2"
+        v-model="lesson.teacher_id"
+        :options="$store.state.teachers"
+        :reduce="(teacher) => teacher.id"
+        placeholder="Выберите преподавателя"
+        :getOptionLabel="(option) => option.last_name + ' ' + option.first_name"
+      >
+      </v-select>
+
+      <v-select
+        id="opt-group"
+        ref="optGroup"
+        v-else
+        class="my-2"
+        v-model="lesson.group_id"
+        :options="$store.state.groups"
+        :reduce="(group) => group.id"
+        placeholder="Выберите группу"
+        :getOptionLabel="(option) => option.code"
+      >
+      </v-select>
+      <v-select
+        id="opt-group"
+        ref="optGroup"
+        class="my-2"
+        v-model="lesson.discipline_id"
+        :options="disciplines"
+        :reduce="(discipline) => discipline.id"
+        placeholder="Выберите дисциплину"
+        :getOptionLabel="(option) => option.title"
+      >
+      </v-select>
+       <v-select
+        id="opt-group"
+        ref="optGroup"
+        class="my-2"
+        v-model="lesson.lecture_hall_id"
+        :options="$store.state.lecture_halls"
+        :reduce="(lecture_hall) => lecture_hall.id"
+        placeholder="Выберите аудиторию"
+        :getOptionLabel="(option) => option.code"
+      >
+      </v-select>
       <button class="btn btn-block btn-primary" type="submit" @click="submit">
         Сохранить
       </button>
@@ -89,6 +65,9 @@
 </template>
 <script>
 import "bootstrap";
+import "vue-select/dist/vue-select.css";
+import vSelect from "vue-select";
+
 export default {
   props: ["lesson"],
   data() {
@@ -96,18 +75,20 @@ export default {
       seen: false,
     };
   },
+  components: {
+    vSelect,
+  },
   computed: {
     disciplines() {
+      // TODO сделать пересечение дисциплин
       let persons =
         this.dtype == "teacher"
           ? this.$store.state.groups
           : this.$store.state.teachers;
-      let person_id = this.dtype == "teacher"
-          ? this.lesson.group_id
-          : this.lesson.teacher_id;
+      let person_id =
+        this.dtype == "teacher" ? this.lesson.group_id : this.lesson.teacher_id;
       return (
-        persons[persons.findIndex((v) => v.id == person_id)]
-          ?.disciplines || []
+        persons[persons.findIndex((v) => v.id == person_id)]?.disciplines || []
       );
     },
     dtype() {
@@ -144,14 +125,14 @@ export default {
       this.seen = false;
     },
     async del() {
-      await this.$store.dispatch('deleteLesson', this.lesson);
+      await this.$store.dispatch("deleteLesson", this.lesson);
       this.remove();
     },
     async submit() {
       if (this.lesson.id) {
-        await this.$store.dispatch('updateLesson', this.lesson);
+        await this.$store.dispatch("updateLesson", this.lesson);
       } else {
-        await this.$store.dispatch('createLesson', this.lesson);
+        await this.$store.dispatch("createLesson", this.lesson);
       }
       this.remove();
     },
