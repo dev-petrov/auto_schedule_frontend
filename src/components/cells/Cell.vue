@@ -1,8 +1,8 @@
 <template>
   <td
-    class="td_hover"
+    class="td_hover tbody_tr_td"
     @click="create"
-    :style="`background: ${lesson.lecture_hall.building.primary_color}; color: ${lesson.lecture_hall.building.secondary_color};`"
+    :style="`background: ${lesson.lecture_hall.building.primary_color}; color: ${lesson.lecture_hall.building.secondary_color};font-size: 11px`"
   >
     <span>
       <p v-if="type == 'teacher'" id="group">{{ lesson.group.code }}</p>

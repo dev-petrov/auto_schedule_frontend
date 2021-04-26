@@ -40,7 +40,6 @@ import vSelect from "vue-select";
 import http from '../../http';
 
 export default {
-  props: ["teacherID"],
   components: {
     vSelect,
   },
@@ -51,7 +50,7 @@ export default {
   },
   computed:{
     name(){
-      return this.$store.state.teachers[this.$store.state.teachers.findIndex(v => v.id == this.teacherID)] || {}
+      return this.$store.state.teachers[this.$store.state.teachers.findIndex(v => v.id == this.$route.query.id)] || {}
     }
   },
   watch:{

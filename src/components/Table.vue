@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="font-size: 12px">
     <div class="container">
       <div class="input-group mb-3 mt-3">
         <div class="input-group-prepend">
@@ -39,13 +39,13 @@
         <div>
           <table class="table table-bordered">
             <thead class="thead">
-              <tr>
-                <th scope="col">
+              <tr class="thead_tr">
+                <th scope="col" class="thead_tr_th">
                   {{ dtype == TYPE_GROUP ? "Группы" : "Преподаватели" }}
                 </th>
               </tr>
-              <tr>
-                <th scope="col">{{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}</th>
+              <tr class="thead_tr">
+                <th scope="col" style='font-size: 12px' class="thead_tr_th">{{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}</th>
               </tr>
             </thead>
           </table>
@@ -53,7 +53,7 @@
         <div ref="names" style="overflow-y: hidden; max-height: 488px">
           <table class="table table-bordered">
             <tbody class="tbody">
-              <tr v-for="name in names" :key="name.id">
+              <tr class="tbody_tr" v-for="name in names" :key="name.id">
                 <!--<th scope="row">
                   <p class="text-center">
                     {{ name.code }}{{ name.last_name }}
@@ -81,14 +81,16 @@
         <div style="overflow: hidden" ref="times">
           <table class="table table-bordered">
             <thead class="thead">
-              <tr>
-                <th scope="col" colspan="7" v-for="day in days" :key="day.id">
+              <tr class="thead_tr">
+                <th class="thead_tr_th" scope="col" colspan="7" v-for="day in days" :key="day.id">
                   <span>{{ day_of_week[day] }}</span>
                 </th>
               </tr>
-              <tr>
+              <tr class="thead_tr">
                 <template v-for="(day, i) in days">
                   <th
+                    class="thead_tr_th"
+                    style='font-size: 12px'
                     v-for="(time, index) in times"
                     :key="`${index}&${day}&${i}`"
                   >
@@ -102,7 +104,7 @@
         <div class="layer" @scroll="scrollTable">
           <table class="table table-bordered">
             <tbody class="tbody">
-              <tr v-for="name in names" :key="name.id">
+              <tr class="tbody_tr" v-for="name in names" :key="name.id">
                 <template v-for="day in days">
                   <cell
                     v-for="(time, index) in times"
@@ -147,8 +149,8 @@
       style="position: absolute"
       :style="{ left: left + 'px', top: top + 'px' }"
     ></FormLesson>
-    <ModalTeacher id="modalTeacher" :teacherID="teacherID" />
-    <ModalGroup id="modalGroup" :groupID="groupID" />
+    <ModalTeacher id="modalTeacher" />
+    <ModalGroup id="modalGroup" />
   </div>
 </template>
 <script>
@@ -193,8 +195,6 @@ export default {
       left: 0,
       top: 0,
       editLesson: {},
-      teacherID: 0,
-      groupID: 0,
     };
   },
   watch: {
@@ -280,10 +280,8 @@ export default {
       var modalType = this.$route.query.modalType;
       var id = this.$route.query.id;
       if (modalType === "teacherModal" && id) {
-        this.teacherID = id;
         this.$bvModal.show("modalTeacher");
       } else if (modalType === "groupModal" && id) {
-        this.groupID = id;
         this.$bvModal.show("modalGroup");
       }
     },
@@ -314,31 +312,20 @@ export default {
   margin: 0;
 }
 
-thead > tr {
+.thead_tr {
   height: 20px !important;
 }
-thead > tr > th {
+.thead_tr_th {
   min-width: 65px !important;
 }
 
-tbody > tr {
-  height: 115px !important;
+.tbody_tr {
+  height: 120px !important;
 }
 
-tbody > tr > td {
+.tbody_tr_td {
   max-width: 65px !important;
   min-width: 65px !important;
 }
 
-.temp {
-  width: 130px;
-}
-.unselectable {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Chrome/Safari/Opera */
-  -khtml-user-select: none; /* Konqueror */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently*/
-}
 </style>
