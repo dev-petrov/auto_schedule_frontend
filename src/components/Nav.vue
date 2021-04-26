@@ -66,6 +66,15 @@
             Преподаватели
           </router-link>
         </li>
+        <li class="nav-item">
+          <router-link
+            v-if="this.$route.name!='education_plans'"
+            to="/education_plans"
+            class="btn btn-info mb-3 mt-3 mr-2"
+          >
+            Образовательный план
+          </router-link>
+        </li>
       </ul>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item" v-if="$store.state.isAuthenticated">

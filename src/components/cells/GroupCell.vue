@@ -1,5 +1,5 @@
 <template lang="">
-<th scope="row" @click="setModal(name.id)" class='td_hover'>
+<th scope="row" @click="setModal(name.id)" class='td_hover tbody_tr_td'>
     <p class="text-center">
         {{ name.code }}
     </p>
@@ -23,5 +23,5 @@ export default {
   },
 };
 </script>
-<style lang="">
+<style>
 </style>

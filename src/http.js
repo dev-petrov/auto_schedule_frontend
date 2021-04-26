@@ -9,6 +9,8 @@ export default {
         Teacher: "/api/teacher/",
         Lesson: "/api/lesson/",
         Building: "/api/building/",
+        EducationPlan: "/api/education_plan/",
+        TrainingDirection: "/api/training_direction/",
     },
     getFilterValues: async function (filters) {
         var filter = "";

@@ -1,18 +1,22 @@
 <template lang="">
-    <b-modal id="modalGroup" @ok="saveGroup" :title="name.code" @hidden="closeModal()">
+    <b-modal id="modalGroup" @ok="saveGroup" :title="name.code || 'Добавить группу'" @hidden="closeModal()">
       <div class="d-block">
-          <b-input-group size="md" :prepend="'Направление'">
-            <b-form-input type="text" :value="name.training_direction.name"></b-form-input>
-          </b-input-group>
+      <v-select
+          v-model="name.training_direction"
+          id="training_direction"
+          :options="$store.state.training_directions"
+          placeholder="Выберите направление подготовки"
+          label='name'
+          value='id'
+      ></v-select>
         </div>
         <div class="d-block">
           <b-input-group size="md" :prepend="'Размер'">
             <b-form-input type="number" :value="name.count_of_students"></b-form-input>
           </b-input-group>
         </div>
-        <div class="d-block">
-        <label>Дисциплины</label>
-        <v-select
+        <b-table v-if='name.id' small striped hover :items="this.name.disciplines || []" :fields="[{key: 'title', label: 'Дисциплины группы из образовательного плана'}]"></b-table>
+        <!-- <v-select
           multiple
           v-model="disciplines"
           id="disciplines"
@@ -20,17 +24,15 @@
           placeholder="Выберите дисциплину"
           label='title'
           value='id'
-        ></v-select>
-      </div>
+        ></v-select> -->
     </b-modal>
 </template>
 <script>
 import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
-import http from '../../http';
+import http from "../../http";
 
 export default {
-  props: ["groupID"],
   components: {
     vSelect,
   },
@@ -43,15 +45,17 @@ export default {
     name() {
       return (
         this.$store.state.groups[
-          this.$store.state.groups.findIndex((v) => v.id == this.groupID)
+          this.$store.state.groups.findIndex(
+            (v) => v.id == this.$route.query.id
+          )
         ] || { training_direction: {} }
       );
     },
   },
-  watch:{
-    $route(){
+  watch: {
+    $route() {
       this.disciplines = this.name.disciplines || [];
-    }
+    },
   },
   methods: {
     closeModal() {
@@ -64,23 +68,25 @@ export default {
       });
     },
     async saveGroup() {
-      if (this.name.id){
+      if (this.name.id) {
         this.name.disciplines = this.disciplines;
         this.name.flow_id = this.name.flow.id;
         this.name.training_direction_id = this.name.training_direction.id;
-        await http.updateItem('Group', this.name.id, this.name, true);
+        await http.updateItem("Group", this.name.id, this.name, true);
       }
       this.closeModal();
-    }
+    },
   },
   async beforeMount() {
-    if(this.$store.state.disciplines.length == 0){
+    if (this.$store.state.disciplines.length == 0) {
       await this.$store.dispatch("setDisciplines");
     }
+    if (this.$store.state.training_directions.length == 0) {
+      await this.$store.dispatch("setTrainingDirections");
+    }
     this.disciplines = this.name.disciplines || [];
-  }
+  },
 };
 </script>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="">
 </style>

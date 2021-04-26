@@ -1,5 +1,5 @@
 <template>
-  <div class="card" style='min-width: 300px'>
+  <div class="card" style='min-width: 300px;'>
     <div class="card-header">
       <button class="btn btn-secondary mr-1" v-if="lesson.id" @click="del">
         Удалить
@@ -140,7 +140,4 @@ export default {
 };
 </script>
 <style>
-* {
-  font-size: 12px;
-}
 </style>

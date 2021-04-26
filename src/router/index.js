@@ -52,6 +52,14 @@ let opts = {
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: "/education_plans",
+      name: "education_plans",
+      component: () => import('../components/EducationPlanTable.vue'),
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 };
