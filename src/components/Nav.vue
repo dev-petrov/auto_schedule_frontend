@@ -1,98 +1,49 @@
  <template>
-  <nav class="navbar navbar-dark bg-primary sticky-top navbar-expand-md">
-    <a href="/" class="navbar-brand ml-3">
-      <!-- <h5> -->
-      <!-- <p> -->
-      <!-- <span id="text">Расписание</span> -->
-      <img src="../assets/logos.png" alt="Расписание" style="height: 55px" />
-      <!-- </p> -->
-      <!-- </h5> -->
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarResponsive"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto" v-if="$store.state.isAuthenticated">
-        <li v-if="this.$route.query.dtype">
-          <router-link to="/" class="btn btn-info mb-3 mt-3 mr-2"
-            >На главную</router-link
-          >
-        </li>
-        <li class="nav-item" v-if="this.$route.query.dtype">
-          <button @click="push" class="btn btn-info mb-3 mt-3 mr-2">
-            Сменить на
-            <span v-if="this.$route.query.dtype == 'teacher'">
-              <b>Группы</b>
-            </span>
-            <span v-else-if="this.$route.query.dtype == 'group'">
-              <b>Преподаватели</b>
-            </span>
-          </button>
-        </li>
-        <li class="nav-item" v-if="!this.$route.query.dtype">
-          <router-link
-            to="/table?dtype=group"
-            class="btn btn-info mb-3 mt-3 mr-2"
-            >Сменить на Группы</router-link
-          >
-        </li>
-        <li class="nav-item" v-if="!this.$route.query.dtype">
-          <router-link
-            to="/table?dtype=teacher"
-            class="btn btn-info mb-3 mt-3 mr-2"
-            >Сменить на Преподаватели</router-link
-          >
-        </li>
-        <li class="nav-item">
-          <router-link
-            v-if="this.$route.name!='groups'"
-            to="/groups"
-            class="btn btn-info mb-3 mt-3 mr-2"
-          >
-            Группы
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            v-if="this.$route.name!='teachers'"
-            to="/teachers"
-            class="btn btn-info mb-3 mt-3 mr-2"
-          >
-            Преподаватели
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            v-if="this.$route.name!='education_plans'"
-            to="/education_plans"
-            class="btn btn-info mb-3 mt-3 mr-2"
-          >
-            Образовательный план
-          </router-link>
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item" v-if="$store.state.isAuthenticated">
-          <button
-            @click="$store.dispatch('logout')"
-            class="btn btn-danger mb-3 mt-3"
-          >
-            Выйти
-          </button>
-        </li>
-        <li class="nav-item" v-else>
-          <router-link to="/login" class="btn btn-success mb-3 mt-3"
-            >Войти</router-link
-          >
-        </li>
-      </ul>
+  <div>
+    <div class="container">
+      <b-navbar toggleable="lg" type="light" variant="light">
+        <b-navbar-brand href="/">EasyTable</b-navbar-brand>
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-collapse id="nav-collapse" is-nav>
+          <!-- Right aligned nav items -->
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item href="/">Расписание</b-nav-item>
+            <b-nav-item-dropdown
+              text="Изменить расписание"
+              right
+              v-if="$store.state.isAuthenticated"
+            >
+              <b-nav-item to="/table?dtype=group">Группы</b-nav-item>
+              <b-nav-item to="/table?dtype=teacher">Преподаватели</b-nav-item>
+            </b-nav-item-dropdown>
+            <b-nav-item
+              to="/table?dtype=teacher"
+              v-if="$store.state.isAuthenticated"
+              >Редактировать сущности</b-nav-item
+            >
+                <b-nav-item-dropdown
+                  text="Пользователь"
+                  right
+                  v-if="$store.state.isAuthenticated"
+                >
+                  <b-nav-item to="#">Профиль</b-nav-item>
+                  <b-button
+                    variant="outline-danger"
+                    @click="$store.dispatch('logout')"
+                    >Выйти</b-button
+                  >
+                </b-nav-item-dropdown>
+                <b-link
+                  to="/login"
+                  variant="outline-success"
+                  class="btn btn-outline-success ml-5"
+                  v-else>Войти</b-link
+                >
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
     </div>
-  </nav>
+  </div>
 </template>
 <script>
 export default {

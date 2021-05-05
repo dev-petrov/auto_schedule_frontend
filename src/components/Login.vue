@@ -1,5 +1,5 @@
 <template>
-  <div class="card-body">
+  <div class="card-body container">
     <div class="input-group mb-3">
       <div class="input-group-prepend">
         <label class="input-group-text temp" for="in-name">Логин</label>
