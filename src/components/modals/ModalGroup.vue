@@ -1,7 +1,13 @@
 <template lang="">
     <b-modal id="modalGroup" @ok="saveGroup" :title="name.code || 'Добавить группу'" @hidden="closeModal()">
       <div class="d-block">
+        <div v-if='name.id'>
+          <h5>Направление подготовки</h5>
+          <p>{{name.training_direction.name}}</p>
+        </div>
+        
       <v-select
+      v-else
           v-model="name.training_direction"
           id="training_direction"
           :options="$store.state.training_directions"
@@ -10,12 +16,12 @@
           value='id'
       ></v-select>
         </div>
-        <div class="d-block">
+        <div class="d-block my-2">
           <b-input-group size="md" :prepend="'Размер'">
             <b-form-input type="number" :value="name.count_of_students"></b-form-input>
           </b-input-group>
         </div>
-        <b-table v-if='name.id' small striped hover :items="this.name.disciplines || []" :fields="[{key: 'title', label: 'Дисциплины группы из образовательного плана'}]"></b-table>
+        <b-table bordered v-if='name.id' small striped hover :items="this.name.disciplines || []" :fields="[{key: 'title', label: 'Дисциплины группы из образовательного плана'}]"></b-table>
         <!-- <v-select
           multiple
           v-model="disciplines"
@@ -25,16 +31,20 @@
           label='title'
           value='id'
         ></v-select> -->
+        <p>Ограничения из направления подготовки</p>
+        <constraint-table v-model='name.training_direction.constraints' :readonly='true'/>
     </b-modal>
 </template>
 <script>
 import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
 import http from "../../http";
+import ConstraintTable from "../ConstraintTable";
 
 export default {
   components: {
     vSelect,
+    ConstraintTable,
   },
   data() {
     return {
