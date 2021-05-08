@@ -65,9 +65,8 @@
                 <TeacherCell
                   v-if="dtype != TYPE_GROUP"
                   :name="name"
-                  @setModal="setModal"
                 />
-                <GroupCell v-else :name="name" @setModal="setModal" />
+                <GroupCell v-else :name="name" />
                 <!--</th>
                 <th style=>
                   <b-table striped hover :items="times"></b-table> 

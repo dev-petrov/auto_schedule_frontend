@@ -32,20 +32,24 @@
           value='id'
         ></v-select>
       </div>
+      <constraint-table v-model='name.constraints' />
     </b-modal>
 </template>
 <script>
 import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
 import http from '../../http';
+import ConstraintTable from '../ConstraintTable';
 
 export default {
   components: {
     vSelect,
+    ConstraintTable,
   },
   data(){
     return{
       disciplines: [],
+      constraints_hash: null,
     }
   },
   computed:{
