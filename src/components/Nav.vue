@@ -17,7 +17,7 @@
               <b-nav-item to="/table?dtype=teacher">Преподаватели</b-nav-item>
             </b-nav-item-dropdown>
             <b-nav-item
-              to="/table?dtype=teacher"
+              to="/redact"
               v-if="$store.state.isAuthenticated"
               >Редактировать сущности</b-nav-item
             >
