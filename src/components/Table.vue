@@ -88,7 +88,7 @@
               <tr class="thead_tr">
                 <template v-for="(day, i) in days">
                   <th
-                    class="thead_tr_th"
+                    class="thead_tr_th text-center"
                     style='font-size: 12px'
                     v-for="(time, index) in times"
                     :key="`${index}&${day}&${i}`"
@@ -180,7 +180,7 @@ export default {
       TYPE_TEACHER: "teacher",
       dtype: "group",
       times: [
-        "9:00",
+        "09:00",
         "10:40",
         "12:20",
         "14:30",
@@ -315,16 +315,16 @@ export default {
   height: 20px !important;
 }
 .thead_tr_th {
-  min-width: 65px !important;
+  min-width: 80px !important;
 }
 
 .tbody_tr {
-  height: 120px !important;
+  height: 80px !important;
 }
 
 .tbody_tr_td {
-  max-width: 65px !important;
-  min-width: 65px !important;
+  max-width: 80px !important;
+  min-width: 80px !important;
 }
 
 </style>
