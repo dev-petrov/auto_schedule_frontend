@@ -1,28 +1,25 @@
 <template>
   <td
-    class="td_hover tbody_tr_td"
+    class="td_hover tbody_tr_td text-center"
     @click="create"
     :style="`background: ${lesson.lecture_hall.building.primary_color}; color: ${lesson.lecture_hall.building.secondary_color};font-size: 11px`"
   >
-    <span>
-      <p v-if="type == 'teacher'" id="group">{{ lesson.group.code }}</p>
-      <p v-else-if="type == 'group' && lesson.teacher.last_name !== ''">
-        {{ lesson.teacher.last_name }} {{ lesson.teacher.first_name[0] }}.{{
-          lesson.teacher.middle_name[0]
-        }}.
-      </p>
-      <p
-        id="discipline"
-        class="text-truncate text-center"
-        v-b-tooltip.hover
-        :title="lesson.discipline.title"
-      >
-        {{ lesson.discipline.short_name }}
-      </p>
-      <p id="lecture_hall">
-        <b>{{ lesson.lecture_hall.code }}</b>
-      </p>
-    </span>
+    <p v-if="type == 'teacher'" id="group">{{ lesson.group.code }}</p>
+    <p class='text-truncate' v-else-if="type == 'group' && lesson.teacher.last_name !== ''" v-b-tooltip.hover
+      :title=" `${lesson.teacher.last_name} ${lesson.teacher.first_name} ${lesson.teacher.middle_name}`">
+      {{ lesson.teacher.last_name }}
+    </p>
+    <p
+      id="discipline"
+      class="text-truncate"
+      v-b-tooltip.hover
+      :title="lesson.discipline.title"
+    >
+      {{ lesson.discipline.short_name }}
+    </p>
+    <p id="lecture_hall">
+      <b>{{ lesson.lecture_hall.code }}</b>
+    </p>
   </td>
 </template>
 <script>
@@ -86,3 +83,8 @@ export default {
   },
 };
 </script>
+<style>
+p {
+  margin: 0;
+}
+</style>
