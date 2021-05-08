@@ -60,6 +60,14 @@ let opts = {
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: "/redact",
+      name: "redact",
+      component: () => import('../components/AdminPanel.vue'),
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 };
