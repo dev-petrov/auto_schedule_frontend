@@ -52,7 +52,6 @@ export default {
           key: "code",
           label: "Группа",
           formatter: (value) => {
-            console.log(this.group)
             return value
           },
         },
@@ -100,7 +99,7 @@ export default {
   computed: {
     group() {
       return this.$store.state.groups.filter((v) =>
-        this.groups.length != 0 ? this.groups.includes(v.group.id) : true
+        this.groups.length != 0 ? this.groups.includes(v.id) : true
       );
     },
   },

@@ -50,21 +50,21 @@ export default {
       fields: [
         {
           key: "last_name",
-          label: "Ф",
+          label: "Фамилия",
           formatter: (value) => {
             return value;
           },
         },
         {
           key: "first_name",
-          label: "И",
+          label: "Имя",
           formatter: (value) => {
             return value;
           },
         },
         {
           key: "middle_name",
-          label: "О",
+          label: "Отчество",
           formatter: (value) => {
             return value;
           },
