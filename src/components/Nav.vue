@@ -26,7 +26,7 @@
                   right
                   v-if="$store.state.isAuthenticated"
                 >
-                  <b-nav-item to="#">Профиль</b-nav-item>
+                  <!-- <b-nav-item to="#">Профиль</b-nav-item> -->
                   <b-button
                     variant="outline-danger"
                     @click="$store.dispatch('logout')"
