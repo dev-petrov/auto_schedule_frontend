@@ -9,7 +9,7 @@
                     type: 'EducationPlan',
                   },
                 })
-              "><EducationPlan/></b-tab>
+              " :active="this.$route.query.type=='teachers'"><EducationPlan/></b-tab>
             <b-tab title="Преподаватели" @click="
                 $router.replace({
                   name: $route.name,
@@ -18,7 +18,7 @@
                     type: 'teachers',
                   },
                 })
-              "><Teachers/></b-tab>
+              " :active="this.$route.query.type=='teachers'"><Teachers/></b-tab>
             <b-tab title="Группы" @click="
                 $router.replace({
                   name: $route.name,
@@ -27,7 +27,7 @@
                     type: 'groups',
                   },
                 })
-              "><Groups/></b-tab>
+              " :active="this.$route.query.type=='groups'"><Groups/></b-tab>
             <b-tab title="Disabled" disabled><p>I'm a disabled tab!</p></b-tab>
         </b-tabs>
     </div>
@@ -44,6 +44,10 @@ export default {
   },
   data() {
     return {};
+  },
+  watch:{
+    $route(){
+    }
   },
 };
 </script>
