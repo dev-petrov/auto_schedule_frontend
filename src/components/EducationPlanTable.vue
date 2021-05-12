@@ -14,6 +14,7 @@
       @click="$bvModal.show('modalEducationPlan')"
       block
       variant="primary"
+      class="mt-2"
       >Добавить</b-button
     >
     <b-table :items="education_plans" :fields="fields">
