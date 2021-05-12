@@ -126,7 +126,7 @@
     </div>
     <div
       class="layer mb-0 d-flex justify-content-center align-items-center"
-      v-else-if="this.$route.params.type"
+      v-else-if="this.$route.query.dtype"
       style="padding: 0 !important"
     >
       <div

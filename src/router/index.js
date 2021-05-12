@@ -69,7 +69,8 @@ let opts = {
         requiresAuth: true
       }
     }
-  ]
+  ],
+  linkExactActiveClass: 'active'
 };
 const router = new VueRouter(opts);
 

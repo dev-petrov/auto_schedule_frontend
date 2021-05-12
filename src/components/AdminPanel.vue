@@ -1,46 +1,22 @@
 <template lang="">
     <div class='container'>
-        <b-tabs content-class="mt-3" fill>
-            <b-tab title="Образовательный план" @click="
-                $router.replace({
-                  name: $route.name,
-                  query: {
-                    ...$route.query,
-                    type: 'EducationPlan',
-                  },
-                })
-              " :active="this.$route.query.type=='teachers'"><EducationPlan/></b-tab>
-            <b-tab title="Преподаватели" @click="
-                $router.replace({
-                  name: $route.name,
-                  query: {
-                    ...$route.query,
-                    type: 'teachers',
-                  },
-                })
-              " :active="this.$route.query.type=='teachers'"><Teachers/></b-tab>
-            <b-tab title="Группы" @click="
-                $router.replace({
-                  name: $route.name,
-                  query: {
-                    ...$route.query,
-                    type: 'groups',
-                  },
-                })
-              " :active="this.$route.query.type=='groups'"><Groups/></b-tab>
-            <b-tab title="Disabled" disabled><p>I'm a disabled tab!</p></b-tab>
-        </b-tabs>
+        <EducationPlan v-if="this.$route.query.type=='education_plan'" />
+        <Teachers v-if="this.$route.query.type=='teachers'" />
+        <Groups v-if="this.$route.query.type=='groups'"/>
+        <TrainingDirection v-if="this.$route.query.type=='training_direction'"/>
     </div>
 </template>
 <script>
 import EducationPlan from "./EducationPlanTable.vue";
 import Teachers from "./TeachersTable.vue"
 import Groups from "./GroupsTable.vue"
+import TrainingDirection from "./TrainingDirectionTable.vue"
 export default {
   components: {
     EducationPlan,
     Teachers,
-    Groups
+    Groups,
+    TrainingDirection
   },
   data() {
     return {};

@@ -1,22 +1,14 @@
 <template>
   <div>
-    <v-select
-      multiple
-      v-model="teachers"
-      id="teachers"
-      :options="$store.state.teachers"
-      placeholder="Выберите преподавателей"
-      label="last_name"
-      :reduce="(v) => v.id"
-      value="id"
-    ></v-select>
+    <b-input placeholder="Фамилия" v-model="last_name"/>
     <b-button
       @click="$bvModal.show('modalTeacher')"
       block
       variant="primary"
+      class="mt-2"
       >Добавить</b-button
     >
-    <b-table :items="teacher" :fields="fields">
+    <b-table :items="teachers" :fields="fields">
       <template #cell(edit)="row">
         <b-button
           class="btn btn-primary"
@@ -40,11 +32,10 @@
 </template>
 
 <script>
-import "vue-select/dist/vue-select.css";
-import vSelect from "vue-select";
 import ModalTeacher from "./modals/ModalTeacher.vue";
+
 export default {
-  components: { ModalTeacher, vSelect },
+  components: { ModalTeacher },
   data() {
     return {
       fields: [
@@ -89,7 +80,7 @@ export default {
           label: "",
         },
       ],
-      teachers: [],
+      last_name: '',
     };
   },
   async beforeMount() {
@@ -101,15 +92,14 @@ export default {
     }
   },
   computed: {
-    teacher() {
+    teachers() {
       return this.$store.state.teachers.filter((v) =>
-        this.teachers.length != 0 ? this.teachers.includes(v.id) : true
+        this.last_name !== '' ? v.last_name.toLowerCase().includes(this.last_name.toLowerCase()) : true
       );
     },
   },
   watch: {
     $route() {
-        console.log(this.teacher)
       if (this.$route.query.modalType === "modalTeacher") {
         this.$bvModal.show("modalTeacher");
       }

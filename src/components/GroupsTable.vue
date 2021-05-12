@@ -2,11 +2,11 @@
   <div>
     <v-select
       multiple
-      v-model="groups"
+      v-model="training_directions"
       id="disciplines"
-      :options="$store.state.groups"
-      placeholder="Выберите группы"
-      label="code"
+      :options="$store.state.training_directions"
+      placeholder="Выберите направления подготовки"
+      :getOptionLabel='(o) => `${o.name} ${o.code}`'
       :reduce="(v) => v.id"
       value="id"
     ></v-select>
@@ -14,6 +14,7 @@
       @click="$bvModal.show('modalGroup')"
       block
       variant="primary"
+      class="mt-2"
       >Добавить</b-button
     >
     <b-table :items="group" :fields="fields">
@@ -85,12 +86,15 @@ export default {
           label: "",
         },
       ],
-      groups: [],
+      training_directions: [],
     };
   },
   async beforeMount() {
     if (this.$store.state.groups.length == 0) {
       await this.$store.dispatch("setGroups");
+    }
+    if (this.$store.state.training_directions.length == 0) {
+      await this.$store.dispatch("setTrainingDirections");
     }
     if (this.$route.query.modalType === "modalGroup") {
       this.$bvModal.show("modalGroup");
@@ -99,7 +103,7 @@ export default {
   computed: {
     group() {
       return this.$store.state.groups.filter((v) =>
-        this.groups.length != 0 ? this.groups.includes(v.id) : true
+        this.training_directions.length != 0 ? this.training_directions.includes(v.training_direction.id) : true
       );
     },
   },
