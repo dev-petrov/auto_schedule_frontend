@@ -1,7 +1,6 @@
 <template lang="">
     <b-modal id="modalEducationPlan" @ok="savePlan" title="Редактировать образовательный план" @hidden="closeModal()">
         <div class="d-block">
-    
             <v-select
             v-model="education_plan.discipline"
             id="disciplines"
@@ -11,7 +10,7 @@
             value='id'
             ></v-select>
         </div>
-        <div class="d-block">
+        <div class="d-block my-2">
             <v-select
             v-model="education_plan.group"
             id="groups"

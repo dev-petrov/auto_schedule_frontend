@@ -11,6 +11,7 @@ export default {
         Building: "/api/building/",
         EducationPlan: "/api/education_plan/",
         TrainingDirection: "/api/training_direction/",
+        Flow: "/api/flow/",
     },
     getFilterValues: async function (filters) {
         var filter = "";
