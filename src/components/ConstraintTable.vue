@@ -80,7 +80,7 @@ export default {
       } else {
         this.content.push(this.constraints[i][j]);
       }
-      this.$emit("input", this.content);
+      this.$emit("input", this.content.filter(v=> v.id || !v.remove));
     },
   },
 };

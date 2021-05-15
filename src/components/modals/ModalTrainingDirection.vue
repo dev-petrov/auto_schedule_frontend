@@ -23,6 +23,7 @@
         ></v-select>
       </div>
       <constraint-table v-model='name.constraints' />
+      <building-table v-model='name.building_constraints' />
     </b-modal>
 </template>
 <script>
@@ -30,11 +31,13 @@ import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
 import http from '../../http';
 import ConstraintTable from '../ConstraintTable';
+import BuildingTable from '../BuildingTable';
 
 export default {
   components: {
     vSelect,
     ConstraintTable,
+    BuildingTable,
   },
   data(){
     return{
@@ -42,7 +45,15 @@ export default {
           {
               code: 'B',
               label: 'Бакалавриат',
-          }
+          },
+          {
+              code: 'S',
+              label: 'Специалитет',
+          },
+          {
+              code: 'M',
+              label: 'Магистратура',
+          },
       ],
     }
   },
