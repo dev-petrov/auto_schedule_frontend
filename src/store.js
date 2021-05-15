@@ -59,6 +59,7 @@ const store = new Vuex.Store({
         buildings: [],
         education_plans: [],
         training_directions: [],
+        flows: [],
     },
     mutations: {
         setDisciplines(state, disciplines) {
@@ -66,6 +67,9 @@ const store = new Vuex.Store({
         },
         setEducationPlans(state, education_plans) {
             state.education_plans = education_plans;
+        },
+        setFlows(state, flows) {
+            state.flows = flows;
         },
         setTrainingDirections(state, training_directions) {
             state.training_directions = training_directions;
@@ -113,6 +117,10 @@ const store = new Vuex.Store({
         async setEducationPlans(context) {
             var data = (await http.getList("EducationPlan", {}, true)).data;
             context.commit('setEducationPlans', data);
+        },
+        async setFlows(context) {
+            var data = (await http.getList("Flow", {}, true)).data;
+            context.commit('setFlows', data);
         },
         async setTrainingDirections(context) {
             var data = (await http.getList("TrainingDirection", {}, true)).data;
@@ -200,7 +208,6 @@ const store = new Vuex.Store({
             Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
         },
         async checkAuth(context) {
-            await context.dispatch("setNetworks");
             try {
                 var result = await Axios.get("/api/auth/user/");
                 if (result.status != 200) {
@@ -208,7 +215,6 @@ const store = new Vuex.Store({
                     return
                 }
                 context.commit('setAuthenticated', true);
-                // await context.dispatch("setAllowedFunctions");
                 context.commit('setUser', result.data);
                 Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
             } catch (e) {

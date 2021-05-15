@@ -2,18 +2,18 @@
     <b-modal  id="modalTrainingDirection" @ok="saveTrainingDirection" title="Направление подготовки" @hidden="closeModal()">
         <div class="d-block">
           <b-input-group size="md" :prepend="'Название'">
-            <b-form-input type="text" :value="name.name"></b-form-input>
+            <b-form-input type="text" v-model="training_direction.name"></b-form-input>
           </b-input-group>
         </div>
-        <div class="d-block">
+        <div class="d-block my-2">
           <b-input-group size="md" :prepend="'Код'">
-            <b-form-input type="text" :value="name.code"></b-form-input>
+            <b-form-input type="text" v-model="training_direction.code"></b-form-input>
           </b-input-group>
         </div>
         <div class="d-block">
         <label>Тип</label>
         <v-select
-          v-model="name.type"
+          v-model="training_direction.type"
           id="type"
           :options="types"
           placeholder="Выберите тип"
@@ -22,16 +22,22 @@
           :reduce='(v) => v.code'
         ></v-select>
       </div>
-      <constraint-table v-model='name.constraints' />
-      <building-table v-model='name.building_constraints' />
+      <div>
+      <label>Ограничения</label>
+      <constraint-table v-model='training_direction.constraints' />
+      </div>
+      <div>
+      <label>Ограничения по зданиям</label>
+      <building-table v-model='training_direction.building_constraints' />
+      </div>
     </b-modal>
 </template>
 <script>
 import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
-import http from '../../http';
-import ConstraintTable from '../ConstraintTable';
-import BuildingTable from '../BuildingTable';
+import http from "../../http";
+import ConstraintTable from "../ConstraintTable";
+import BuildingTable from "../BuildingTable";
 
 export default {
   components: {
@@ -39,58 +45,71 @@ export default {
     ConstraintTable,
     BuildingTable,
   },
-  data(){
-    return{
+  data() {
+    return {
       types: [
-          {
-              code: 'B',
-              label: 'Бакалавриат',
-          },
-          {
-              code: 'S',
-              label: 'Специалитет',
-          },
-          {
-              code: 'M',
-              label: 'Магистратура',
-          },
+        {
+          code: "B",
+          label: "Бакалавриат",
+        },
+        {
+          code: "S",
+          label: "Специалитет",
+        },
+        {
+          code: "M",
+          label: "Магистратура",
+        },
       ],
-    }
+    };
   },
-  computed:{
-    name(){
-      return this.$store.state.training_directions[this.$store.state.training_directions.findIndex(v => v.id == this.$route.query.id)] || {}
-    }
+  computed: {
+    training_direction() {
+      return (
+        this.$store.state.training_directions[
+          this.$store.state.training_directions.findIndex(
+            (v) => v.id == this.$route.query.id
+          )
+        ] || {constraints: [], building_constraints: []}
+      );
+    },
   },
-  watch:{
-    $route(){
-      this.disciplines = this.name.disciplines || [];
-    }
+  watch: {
+    $route() {},
   },
-  methods:{
-    closeModal(){
-      var q = {...this.$route.query}
-      this.$delete(q,"id")
-      this.$delete(q,"modalType")
+  methods: {
+    closeModal() {
+      var q = { ...this.$route.query };
+      this.$delete(q, "id");
+      this.$delete(q, "modalType");
       this.$router.replace({
         name: this.$route.name,
-        query: q
-      })
+        query: q,
+      });
     },
     async saveTrainingDirection() {
-      if (this.name.id){
-        this.name.disciplines = this.disciplines;
-        await http.updateItem('TrainingDirection', this.name.id, this.name, true);
+      if (this.training_direction.id) {
+        await http.updateItem(
+          "TrainingDirection",
+          this.training_direction.id,
+          this.training_direction,
+          true
+        );
+      } else {
+        await http.createItem(
+          "TrainingDirection",
+          this.training_direction,
+          true
+        );
       }
       this.closeModal();
-    }
+    },
   },
   async beforeMount() {
-    if(this.$store.state.disciplines.length == 0){
+    if (this.$store.state.disciplines.length == 0) {
       await this.$store.dispatch("setDisciplines");
     }
-    this.disciplines = this.name.disciplines || [];
-  }
+  },
 };
 </script>
 <style lang="">

@@ -64,7 +64,7 @@ export default {
           },
         },
         {
-          key: "flow",
+          key: "training_direction",
           label: "Направление",
           formatter: (value) => {
               return value.name
