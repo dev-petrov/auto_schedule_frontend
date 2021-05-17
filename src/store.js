@@ -5,24 +5,22 @@ import Vue from 'vue'
 
 Vue.use(Vuex)
 
-function createResult(data, type) {
+function createResult(data, instances, type) {
     var result = new Map();
+    for (let key of instances) {
+        result[String(key.id)] = {
+            "1": {},
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {},
+        };
+    }
+
     for (var d of data) {
         var key = String(type == "g" ? d.group.id : d.teacher.id);
-        if (!result[key]) {
-            result[key] = {
-                "1": {},
-                "2": {},
-                "3": {},
-                "4": {},
-                "5": {},
-                "6": {},
-            };
-        }
         var day = String(d.day_of_week);
-        // if (!result[key][day]) {
-        //     result[key][day] = new Map();
-        // }
         result[key][day][String(d.lesson)] = d;
     }
     return result;
@@ -85,11 +83,10 @@ const store = new Vuex.Store({
         },
         setTeachers(state, teachers) {
             state.teachers = teachers;
-            console.log(teachers);
         },
         setSchedule(state, schedule) {
-            state.lessons_by_groups = createResult(schedule, "g");
-            state.lessons_by_teachers = createResult(schedule, "t");
+            state.lessons_by_groups = createResult(schedule, state.groups, "g");
+            state.lessons_by_teachers = createResult(schedule, state.teachers, "t");
         },
         setScheduleForOneEntity(state, schedule) {
             state.lessons = groupByDay(schedule);
@@ -144,6 +141,12 @@ const store = new Vuex.Store({
         },
         async setSchedule(context, filter = {}) {
             var data = (await http.getList("Lesson", filter, true)).data;
+            if (context.state.groups.length == 0) {
+                await context.dispatch('setGroups')
+            }
+            if (context.state.teachers.length == 0) {
+                await context.dispatch('setTeachers')
+            }
             context.commit('setSchedule', data);
         },
         async setScheduleForOneEntity(context, filter = {}) {
