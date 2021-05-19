@@ -28,17 +28,17 @@ function createResult(data, instances, type) {
 
 function groupByDay(data) {
     var result = {
-        "1": [],
-        "2": [],
-        "3": [],
-        "4": [],
-        "5": [],
-        "6": [],
+        "1": {},
+        "2": {},
+        "3": {},
+        "4": {},
+        "5": {},
+        "6": {},
     };
     for (let d of data) {
         var key = String(d.day_of_week);
-        result[key].push(d);
-        result[key] = result[key].sort(v => v.lesson)
+        var second_key = String(d.lesson);
+        result[key][second_key] = d;
     }
     return result;
 }
