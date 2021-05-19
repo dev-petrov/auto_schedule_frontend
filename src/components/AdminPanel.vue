@@ -4,6 +4,7 @@
         <Teachers v-if="this.$route.query.type=='teachers'" />
         <Groups v-if="this.$route.query.type=='groups'"/>
         <TrainingDirection v-if="this.$route.query.type=='training_direction'"/>
+        <DisciplinesTable v-if="this.$route.query.type=='disciplines'"/>
     </div>
 </template>
 <script>
@@ -11,12 +12,14 @@ import EducationPlan from "./EducationPlanTable.vue";
 import Teachers from "./TeachersTable.vue"
 import Groups from "./GroupsTable.vue"
 import TrainingDirection from "./TrainingDirectionTable.vue"
+import DisciplinesTable from "./DisciplinesTable.vue"
 export default {
   components: {
     EducationPlan,
     Teachers,
     Groups,
-    TrainingDirection
+    TrainingDirection,
+    DisciplinesTable,
   },
   data() {
     return {};
