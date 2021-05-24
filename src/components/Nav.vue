@@ -26,7 +26,7 @@
               <b-dropdown-item to="/redact?type=groups">Группы</b-dropdown-item>
               <b-dropdown-item to="/redact?type=training_direction">Направления подготовки</b-dropdown-item>
               <b-dropdown-item to="/redact?type=disciplines">Дисциплины</b-dropdown-item>
-              <b-dropdown-item to="/redact?type=audience">Аудитории</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=lecture_hall">Аудитории</b-dropdown-item>
             </b-nav-item-dropdown>
                 <b-nav-item-dropdown
                   text="Пользователь"

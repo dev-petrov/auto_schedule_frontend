@@ -7,11 +7,11 @@
           <v-select
       v-model="lecture_hall.building"
       id="buildings"
-      :options="buildings"
+      :options="$store.state.buildings"
       placeholder="Выберите строение"
       label="name"
-      value="building"
-      :reduce="v => v.building"
+      value="building.id"
+      
       class="my-2"
     ></v-select>
           <v-select
@@ -26,16 +26,16 @@
     ></v-select>
     <div class="d-block my-2">
       <b-form-checkbox
-        id="need_projector"
-        v-model="lecture_hall.need_projector"
-        name="need_projector"
+        id="has_projector"
+        v-model="lecture_hall.has_projector"
+        name="has_projector"
       >
         Проектор
       </b-form-checkbox>
       <b-form-checkbox
-        id="need_big_blackboard"
-        v-model="lecture_hall.need_big_blackboard"
-        name="need_big_blackboard"
+        id="has_big_blackboard"
+        v-model="lecture_hall.has_big_blackboard"
+        name="has_big_blackboard"
       >
         Большая доска
       </b-form-checkbox>
@@ -52,11 +52,6 @@ export default {
   components: {    vSelect,},
   data() {
     return {
-      buildings: [
-          {name: "ПК", building:1},
-          {name: 'АВ',building:2},
-          {name: 'БС', building:3}
-      ],
       prof_types: [
         {
           name: "Обычная",
@@ -90,8 +85,8 @@ export default {
       ]|| {
         constraints: {},
       };
-      lecture_hall.need_projector = Boolean(lecture_hall.constraints.projector);
-      lecture_hall.need_big_blackboard = Boolean(lecture_hall.constraints.big_blackboard);
+      lecture_hall.has_projector = Boolean(lecture_hall.constraints.projector);
+      lecture_hall.has_big_blackboard = Boolean(lecture_hall.constraints.big_blackboard);
       return lecture_hall;
     },
   },

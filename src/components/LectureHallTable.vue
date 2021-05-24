@@ -48,13 +48,8 @@ export default {
           key: "building",
           label: "Строение",
           formatter: (v) => {
-            if(v==1)
-                return 'ПК'
-            else if (v==2)
-                return 'АВ'
-            else if (v==3)
-                return 'БС'
-          },
+            return this.$store.state.buildings[this.$store.state.buildings.findIndex(x => x.id == v)].name
+          }
         },
         {
           key: "spaciousness",
