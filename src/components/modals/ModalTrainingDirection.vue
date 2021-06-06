@@ -96,11 +96,12 @@ export default {
           true
         );
       } else {
-        await http.createItem(
-          "TrainingDirection",
-          this.training_direction,
-          true
-        );
+        await this.$store.dispatch("addItem", {
+          data: this.training_direction,
+          mutation: "setTrainingDirections",
+          url: "TrainingDirection",
+          items_name: "training_directions",
+        });
       }
       this.closeModal();
     },

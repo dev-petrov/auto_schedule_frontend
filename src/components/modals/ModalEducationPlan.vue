@@ -73,7 +73,12 @@ export default {
       } else {
         this.education_plan.discipline_id = this.education_plan.discipline.id;
         this.education_plan.group_id = this.education_plan.group.id;
-        await http.createItem("EducationPlan", this.education_plan, true);
+        await this.$store.dispatch("addItem", {
+          data: this.education_plan,
+          mutation: "setEducationPlans",
+          url: "EducationPlan",
+          items_name: "education_plans",
+        });
       }
       this.closeModal();
     },
