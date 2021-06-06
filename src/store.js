@@ -165,6 +165,14 @@ const store = new Vuex.Store({
             (await http.deleteItem('Lesson', data.id, true));
             context.commit('deleteLesson', data);
         },
+        async addItem(context, data){
+            let item_data = data.data
+            let mutation = data.mutation;
+            let response = (await http.createItem(data.url, item_data, true)).data;
+            let items = context.state[data.items_name]
+            items.push(response);
+            context.commit(mutation, items);
+        },
         async login(context, creds) {
             var username = creds.username;
             var password = creds.password;

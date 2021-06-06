@@ -2,7 +2,7 @@
   <b-modal
     id="modalFlow"
     @ok="saveFlow"
-    :title="flow.name || 'Добавить дисциплину'"
+    :title="flow.name || 'Добавить поток'"
     @hidden="closeModal()"
   >
     <div class="d-block my-2">
@@ -17,19 +17,17 @@ import "vue-select/dist/vue-select.css";
 import http from "../../http";
 
 export default {
-  components: {
-  },
+  components: {},
   data() {
-    return {
-    };
+    return {};
   },
   computed: {
     flow() {
-      return this.$store.state.flows[
-        this.$store.state.flows.findIndex(
-          (v) => v.id == this.$route.query.id
-        )
-      ]
+      return (
+        this.$store.state.flows[
+          this.$store.state.flows.findIndex((v) => v.id == this.$route.query.id)
+        ] || { name: "" }
+      );
     },
   },
   watch: {
@@ -47,14 +45,14 @@ export default {
     },
     async saveFlow() {
       if (this.flow.id) {
-        await http.updateItem(
-          "Flow",
-          this.flow.id,
-          this.flow,
-          true
-        );
+        await http.updateItem("Flow", this.flow.id, this.flow, true);
       } else {
-        await http.createItem("Discipline", this.flow, true);
+        await this.$store.dispatch("addItem", {
+          data: this.flow,
+          mutation: "setFlows",
+          url: "Flow",
+          items_name: "flows",
+        });
       }
       this.closeModal();
     },

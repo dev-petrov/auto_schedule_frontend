@@ -95,7 +95,12 @@ export default {
       } else {
         this.group.training_direction_id = this.group.training_direction.id;
         this.group.flow_id = this.group.flow ? this.group.flow.id : null;
-        await http.createItem("Group", this.group, true);
+        await this.$store.dispatch("addItem", {
+          data: this.group,
+          mutation: "setGroups",
+          url: "Group",
+          items_name: "groups",
+        });
       }
       this.closeModal();
     },
