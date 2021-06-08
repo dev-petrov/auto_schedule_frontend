@@ -35,8 +35,26 @@
           Редактировать
         </b-button>
       </template>
+      <template #cell(delete)="row">
+        <b-button
+          class="btn btn-danger"
+          @click="
+            $router.replace({
+              name: $route.name,
+              query: {
+                ...$route.query,
+                id: row.item.id,
+                modalType: 'modalDelete',
+              },
+            })
+          "
+        >
+          Удалить
+        </b-button>
+      </template>
     </b-table>
     <modal-education-plan />
+    <modalDelete/>
   </div>
 </template>
 
@@ -44,8 +62,9 @@
 import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
 import ModalEducationPlan from "./modals/ModalEducationPlan.vue";
+import modalDelete from "./modals/ModalDelete.vue"
 export default {
-  components: { ModalEducationPlan, vSelect },
+  components: { ModalEducationPlan, vSelect, modalDelete },
   data() {
     return {
       fields: [
@@ -71,6 +90,10 @@ export default {
           key: "edit",
           label: "",
         },
+        {
+          key: "delete",
+          label: "",
+        }
       ],
       groups: [],
     };
@@ -94,6 +117,9 @@ export default {
     $route() {
       if (this.$route.query.modalType === "modalEducationPlan") {
         this.$bvModal.show("modalEducationPlan");
+      }
+      else if (this.$route.query.modalType === "modalDelete"){
+        this.$bvModal.show("modalDelete");
       }
     },
   },
