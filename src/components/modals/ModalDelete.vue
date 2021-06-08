@@ -17,7 +17,7 @@ export default {
     };
   },
   computed: {
-    education_plan() {
+    education_plans() {
       return (
         this.$store.state.education_plans
         //  this.$store.state.education_plans.findIndex(
@@ -43,13 +43,13 @@ export default {
       });
     },
     async deleteEducationPlan() {
-      if (this.education_plan) {
+      if (this.education_plans) {
         var id = this.$store.state.education_plans.findIndex(
             (v) => v.id == this.$route.query.id
           ) 
-        this.education_plan.splice(id,1)
+        this.education_plans.splice(id,1)
         await http.deleteItem("EducationPlan", this.$route.query.id, true);
-        this.$store.commit("setEducationPlans", this.education_plan)
+        this.$store.commit("setEducationPlans", this.education_plans)
       }
       this.closeModal();
     },
