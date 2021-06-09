@@ -26,6 +26,7 @@
               <b-dropdown-item to="/redact?type=groups">Группы</b-dropdown-item>
               <b-dropdown-item to="/redact?type=training_direction">Направления подготовки</b-dropdown-item>
               <b-dropdown-item to="/redact?type=disciplines">Дисциплины</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=lecture_hall">Аудитории</b-dropdown-item>
               <b-dropdown-item to="/redact?type=flow">Потоки</b-dropdown-item>
             </b-nav-item-dropdown>
                 <b-nav-item-dropdown
@@ -34,7 +35,7 @@
                   v-if="$store.state.isAuthenticated"
                 >
                   <!-- <b-nav-item to="#">Профиль</b-nav-item> -->
-                  <b-button
+                  <b-button class="w-100"
                     variant="outline-danger"
                     @click="$store.dispatch('logout')"
                     >Выйти</b-button
