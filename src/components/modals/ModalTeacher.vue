@@ -85,7 +85,12 @@ export default {
         await http.updateItem("Teacher", this.teacher.id, this.teacher, true);
       } else {
         this.teacher.disciplines = this.disciplines;
-        await http.createItem("Teacher", this.teacher, true);
+        await this.$store.dispatch("addItem", {
+          data: this.teacher,
+          mutation: "setTeachers",
+          url: "Teacher",
+          items_name: "teachers",
+        });
       }
       this.closeModal();
     },

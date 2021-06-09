@@ -137,7 +137,12 @@ export default {
           true
         );
       } else {
-        await http.createItem("Discipline", this.discipline, true);
+        await this.$store.dispatch("addItem", {
+          data: this.discipline,
+          mutation: "setDisciplines",
+          url: "Discipline",
+          items_name: "disciplines",
+        });
       }
       this.closeModal();
     },
