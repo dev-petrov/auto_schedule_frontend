@@ -17,6 +17,13 @@
       class="mt-2"
       >Добавить</b-button
     >
+    <b-button
+      @click="$bvModal.show('modalUploadEducationPlan')"
+      block
+      variant="primary"
+      class="mt-2"
+      >Загрузить</b-button
+    >
     <b-table :items="education_plans" :fields="fields">
       <template #cell(edit)="row">
         <b-button
@@ -55,6 +62,7 @@
     </b-table>
     <modal-education-plan />
     <modalDelete/>
+    <modal-upload-education-plans/>
   </div>
 </template>
 
@@ -62,9 +70,10 @@
 import "vue-select/dist/vue-select.css";
 import vSelect from "vue-select";
 import ModalEducationPlan from "./modals/ModalEducationPlan.vue";
+import ModalUploadEducationPlans from "./modals/ModalUploadEducationPlans.vue";
 import modalDelete from "./modals/ModalDelete.vue"
 export default {
-  components: { ModalEducationPlan, vSelect, modalDelete },
+  components: { ModalEducationPlan, vSelect, modalDelete, ModalUploadEducationPlans },
   data() {
     return {
       fields: [
