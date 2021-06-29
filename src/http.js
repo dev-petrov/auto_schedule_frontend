@@ -12,6 +12,7 @@ export default {
         EducationPlan: "/api/education_plan/",
         TrainingDirection: "/api/training_direction/",
         Flow: "/api/flow/",
+        CreateSchedule: "/api/lesson/create_schedule/",
     },
     getFilterValues: async function (filters) {
         var filter = "";

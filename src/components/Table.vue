@@ -1,23 +1,30 @@
 <template>
   <div style="font-size: 12px">
     <div class="container">
-      <div class="input-group mb-3 mt-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="code">{{
-            dtype == TYPE_TEACHER ? "Преподаватель" : "Группа"
-          }}</span>
-        </div>
-        <input
-          type="text"
-          class="form-control"
-          :placeholder="
-            dtype == TYPE_TEACHER ? 'ФИО преподавателя' : 'Код группы'
-          "
-          aria-label="code"
-          aria-describedby="code"
-          v-model="code"
-        />
-      </div>
+      <b-row>
+        <b-col cols='10'>
+          <div class="input-group mb-3 mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="code">{{
+                dtype == TYPE_TEACHER ? "Преподаватель" : "Группа"
+              }}</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              :placeholder="
+                dtype == TYPE_TEACHER ? 'ФИО преподавателя' : 'Код группы'
+              "
+              aria-label="code"
+              aria-describedby="code"
+              v-model="code"
+            />
+          </div>
+        </b-col>
+        <b-col cols='2'>
+          <b-button variant="primary" @click='createSchedule'>Составить расписание</b-button>
+        </b-col>
+      </b-row>
       <div class="d-flex" v-if="!this.$route.params.type && code != '' && v">
         <p>
           <button
@@ -45,7 +52,9 @@
                 </th>
               </tr>
               <tr class="thead_tr">
-                <th scope="col" style='font-size: 12px' class="thead_tr_th">{{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}</th>
+                <th scope="col" style="font-size: 12px" class="thead_tr_th">
+                  {{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}
+                </th>
               </tr>
             </thead>
           </table>
@@ -62,10 +71,7 @@
                     <br />
                     {{ name.middle_name }}
                   </p>-->
-                <TeacherCell
-                  v-if="dtype != TYPE_GROUP"
-                  :name="name"
-                />
+                <TeacherCell v-if="dtype != TYPE_GROUP" :name="name" />
                 <GroupCell v-else :name="name" />
                 <!--</th>
                 <th style=>
@@ -81,7 +87,13 @@
           <table class="table table-bordered">
             <thead class="thead">
               <tr class="thead_tr">
-                <th class="thead_tr_th" scope="col" colspan="7" v-for="day in days" :key="day.id">
+                <th
+                  class="thead_tr_th"
+                  scope="col"
+                  colspan="7"
+                  v-for="day in days"
+                  :key="day.id"
+                >
                   <span>{{ day_of_week[day] }}</span>
                 </th>
               </tr>
@@ -89,7 +101,7 @@
                 <template v-for="(day, i) in days">
                   <th
                     class="thead_tr_th text-center"
-                    style='font-size: 12px'
+                    style="font-size: 12px"
                     v-for="(time, index) in times"
                     :key="`${index}&${day}&${i}`"
                   >
@@ -179,15 +191,7 @@ export default {
       TYPE_GROUP: "group",
       TYPE_TEACHER: "teacher",
       dtype: "group",
-      times: [
-        "09:00",
-        "10:40",
-        "12:20",
-        "14:30",
-        "16:10",
-        "17:50",
-        "19:30",
-      ],
+      times: ["09:00", "10:40", "12:20", "14:30", "16:10", "17:50", "19:30"],
       days: [1, 2, 3, 4, 5, 6],
       width: 0,
       seen: false,
@@ -247,6 +251,10 @@ export default {
     this.showModal();
   },
   methods: {
+    async createSchedule(){
+      await http.createItem('CreateSchedule', {}, true);
+      await this.$store.dispatch("setSchedule");
+    },
     scrollTable(e) {
       this.$refs["names"].scrollTop = e.target.scrollTop;
       this.$refs["times"].scrollLeft = e.target.scrollLeft;
@@ -326,5 +334,4 @@ export default {
   max-width: 80px !important;
   min-width: 80px !important;
 }
-
 </style>

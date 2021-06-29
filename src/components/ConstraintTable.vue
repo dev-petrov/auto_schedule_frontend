@@ -15,13 +15,13 @@
           @mouseenter="$event.ctrlKey ? setCell(i, j) : null"
           :style="`background: ${
             constraints[i][j] && !constraints[i][j].remove
-              ? '#17db09'
-              : '#e31912'
+              ? '#e31912'
+              : '#17db09'
           }`"
           v-for="j in 7"
           :key="`${i}${j}`"
         >
-          {{ constraints[i][j] && !constraints[i][j].remove ? "+" : "-" }}
+          {{ constraints[i][j] && !constraints[i][j].remove ? "-" : "+" }}
         </td>
       </tr>
     </table>
