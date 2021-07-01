@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" v-if='$store.state.buildings.length'>
     <div class="input-group mb-3 mt-3">
       <div class="input-group-prepend">
         <span class="input-group-text" id="code">{{ "Группа" }}</span>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import SimpleCell from "./SimpleCell";
+import SimpleCell from "./cells/SimpleCell";
 import defaults_ru from "../data/defaults_ru";
 
 export default {

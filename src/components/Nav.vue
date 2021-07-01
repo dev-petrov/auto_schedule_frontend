@@ -1,71 +1,57 @@
  <template>
-  <nav class="navbar navbar-dark bg-primary sticky-top navbar-expand-md">
-    <a href="/" class="navbar-brand ml-3">
-      <!-- <h5> -->
-      <!-- <p> -->
-      <!-- <span id="text">Расписание</span> -->
-      <img src="../assets/logos.png" alt="Расписание" style="height: 55px" />
-      <!-- </p> -->
-      <!-- </h5> -->
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarResponsive"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto" v-if="$store.state.isAuthenticated">
-        <li v-if="this.$route.query.dtype">
-          <router-link to="/" class="btn btn-info mb-3 mt-3 mr-2"
-            >На главную</router-link
-          >
-        </li>
-        <li class="nav-item" v-if="this.$route.query.dtype">
-          <button @click="push" class="btn btn-info mb-3 mt-3 mr-2">
-            Сменить на
-            <span v-if="this.$route.query.dtype == 'teacher'">
-              <b>Группы</b>
-            </span>
-            <span v-else-if="this.$route.query.dtype == 'group'">
-              <b>Преподаватели</b>
-            </span>
-          </button>
-        </li>
-        <li class="nav-item" v-if="!this.$route.query.dtype">
-          <router-link
-            to="/table?dtype=group"
-            class="btn btn-info mb-3 mt-3 mr-2"
-            >Сменить на Группы</router-link
-          >
-        </li>
-        <li class="nav-item" v-if="!this.$route.query.dtype">
-          <router-link
-            to="/table?dtype=teacher"
-            class="btn btn-info mb-3 mt-3 mr-2"
-            >Сменить на Преподаватели</router-link
-          >
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item" v-if="$store.state.isAuthenticated">
-          <button
-            @click="$store.dispatch('logout')"
-            class="btn btn-danger mb-3 mt-3"
-          >
-            Выйти
-          </button>
-        </li>
-        <li class="nav-item" v-else>
-          <router-link to="/login" class="btn btn-success mb-3 mt-3"
-            >Войти</router-link
-          >
-        </li>
-      </ul>
+  <div>
+    <div class="container">
+      <b-navbar toggleable="lg" type="light" variant="light">
+        <b-navbar-brand to="/">EasyTable</b-navbar-brand>
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-collapse id="nav-collapse" is-nav>
+          <!-- Right aligned nav items -->
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item to="/">Расписание</b-nav-item>
+            <b-nav-item-dropdown
+              text="Изменить расписание"
+              right
+              v-if="$store.state.isAuthenticated"
+            >
+              <b-dropdown-item to="/table?dtype=group">Группы</b-dropdown-item>
+              <b-dropdown-item to="/table?dtype=teacher">Преподаватели</b-dropdown-item>
+            </b-nav-item-dropdown>
+            <b-nav-item-dropdown
+              text="Редактировать сущности"
+              right
+              v-if="$store.state.isAuthenticated"
+            >
+              <b-dropdown-item to="/redact?type=education_plan">Образовательный план</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=teachers">Преподаватели</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=groups">Группы</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=training_direction">Направления подготовки</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=disciplines">Дисциплины</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=lecture_hall">Аудитории</b-dropdown-item>
+              <b-dropdown-item to="/redact?type=flow">Потоки</b-dropdown-item>
+            </b-nav-item-dropdown>
+                <b-nav-item-dropdown
+                  text="Пользователь"
+                  right
+                  v-if="$store.state.isAuthenticated"
+                >
+                  <!-- <b-nav-item to="#">Профиль</b-nav-item> -->
+                  <b-button class="w-100"
+                    variant="outline-danger"
+                    @click="$store.dispatch('logout')"
+                    >Выйти</b-button
+                  >
+                </b-nav-item-dropdown>
+                <b-link
+                  to="/login"
+                  variant="outline-success"
+                  class="btn btn-outline-success ml-5"
+                  v-else>Войти</b-link
+                >
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
     </div>
-  </nav>
+  </div>
 </template>
 <script>
 export default {

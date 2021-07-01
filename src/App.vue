@@ -2,7 +2,9 @@
   <div id="app">
       <Nav />
       <router-view />
+      
   </div>
+  
 </template>
 
 <script>
@@ -22,6 +24,7 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch('setGroups');
+    await this.$store.dispatch('setBuildings');
   }
 }
 </script>

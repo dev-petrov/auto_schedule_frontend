@@ -36,8 +36,41 @@ let opts = {
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: "/groups",
+      name: "groups",
+      component: () => import('../components/Redact.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/teachers",
+      name: "teachers",
+      component: () => import('../components/Redact.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/education_plans",
+      name: "education_plans",
+      component: () => import('../components/EducationPlanTable.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/redact",
+      name: "redact",
+      component: () => import('../components/AdminPanel.vue'),
+      meta: {
+        requiresAuth: true
+      }
     }
-  ]
+  ],
+  linkExactActiveClass: 'active'
 };
 const router = new VueRouter(opts);
 

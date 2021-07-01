@@ -8,6 +8,11 @@ export default {
         Group: "/api/group/",
         Teacher: "/api/teacher/",
         Lesson: "/api/lesson/",
+        Building: "/api/building/",
+        EducationPlan: "/api/education_plan/",
+        TrainingDirection: "/api/training_direction/",
+        Flow: "/api/flow/",
+        CreateSchedule: "/api/lesson/create_schedule/",
     },
     getFilterValues: async function (filters) {
         var filter = "";

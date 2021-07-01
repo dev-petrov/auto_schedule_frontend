@@ -1,23 +1,30 @@
 <template>
-  <div>
+  <div style="font-size: 12px">
     <div class="container">
-      <div class="input-group mb-3 mt-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="code">{{
-            dtype == TYPE_TEACHER ? "Преподаватель" : "Группа"
-          }}</span>
-        </div>
-        <input
-          type="text"
-          class="form-control"
-          :placeholder="
-            dtype == TYPE_TEACHER ? 'ФИО преподавателя' : 'Код группы'
-          "
-          aria-label="code"
-          aria-describedby="code"
-          v-model="code"
-        />
-      </div>
+      <b-row>
+        <b-col cols='10'>
+          <div class="input-group mb-3 mt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="code">{{
+                dtype == TYPE_TEACHER ? "Преподаватель" : "Группа"
+              }}</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              :placeholder="
+                dtype == TYPE_TEACHER ? 'ФИО преподавателя' : 'Код группы'
+              "
+              aria-label="code"
+              aria-describedby="code"
+              v-model="code"
+            />
+          </div>
+        </b-col>
+        <b-col cols='2'>
+          <b-button variant="primary" @click='createSchedule'>Составить расписание</b-button>
+        </b-col>
+      </b-row>
       <div class="d-flex" v-if="!this.$route.params.type && code != '' && v">
         <p>
           <button
@@ -35,17 +42,19 @@
       </div>
     </div>
     <div v-if="loaded" class="d-flex" style="max-height: 500px">
-      <div style="width: 15%">
+      <div style="width: 10%">
         <div>
           <table class="table table-bordered">
             <thead class="thead">
-              <tr>
-                <th scope="col">
+              <tr class="thead_tr">
+                <th scope="col" class="thead_tr_th">
                   {{ dtype == TYPE_GROUP ? "Группы" : "Преподаватели" }}
                 </th>
               </tr>
-              <tr>
-                <th scope="col">{{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}</th>
+              <tr class="thead_tr">
+                <th scope="col" style="font-size: 12px" class="thead_tr_th">
+                  {{ dtype == TYPE_GROUP ? "Код" : "ФИО" }}
+                </th>
               </tr>
             </thead>
           </table>
@@ -53,33 +62,49 @@
         <div ref="names" style="overflow-y: hidden; max-height: 488px">
           <table class="table table-bordered">
             <tbody class="tbody">
-              <tr v-for="name in names" :key="name.id">
-                <th scope="row">
+              <tr class="tbody_tr" v-for="name in names" :key="name.id">
+                <!--<th scope="row">
                   <p class="text-center">
                     {{ name.code }}{{ name.last_name }}
                     <br />
                     {{ name.first_name }}
                     <br />
                     {{ name.middle_name }}
-                  </p>
-                </th>
+                  </p>-->
+                <TeacherCell v-if="dtype != TYPE_GROUP" :name="name" />
+                <GroupCell v-else :name="name" />
+                <!--</th>
+                <th style=>
+                  <b-table striped hover :items="times"></b-table> 
+                </th>-->
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-      <div style="width: 85%">
+      <div style="width: 90%">
         <div style="overflow: hidden" ref="times">
           <table class="table table-bordered">
             <thead class="thead">
-              <tr>
-                <th scope="col" colspan="7" v-for="day in days" :key="day.id">
+              <tr class="thead_tr">
+                <th
+                  class="thead_tr_th"
+                  scope="col"
+                  colspan="7"
+                  v-for="day in days"
+                  :key="day.id"
+                >
                   <span>{{ day_of_week[day] }}</span>
                 </th>
               </tr>
-              <tr>
+              <tr class="thead_tr">
                 <template v-for="(day, i) in days">
-                  <th v-for="(time, index) in times" :key="`${index}&${day}&${i}`">
+                  <th
+                    class="thead_tr_th text-center"
+                    style="font-size: 12px"
+                    v-for="(time, index) in times"
+                    :key="`${index}&${day}&${i}`"
+                  >
                     {{ time }}
                   </th>
                 </template>
@@ -90,7 +115,7 @@
         <div class="layer" @scroll="scrollTable">
           <table class="table table-bordered">
             <tbody class="tbody">
-              <tr v-for="name in names" :key="name.id">
+              <tr class="tbody_tr" v-for="name in names" :key="name.id">
                 <template v-for="day in days">
                   <cell
                     v-for="(time, index) in times"
@@ -100,6 +125,8 @@
                     "
                     :type="dtype"
                     :person_id="name.id"
+                    :day="day"
+                    :lesson_num="index + 1"
                     @create="create"
                   />
                 </template>
@@ -111,7 +138,7 @@
     </div>
     <div
       class="layer mb-0 d-flex justify-content-center align-items-center"
-      v-else-if="this.$route.params.type"
+      v-else-if="this.$route.query.dtype"
       style="padding: 0 !important"
     >
       <div
@@ -124,7 +151,7 @@
     </div>
     <FormLesson
       :mouseup="function (e) {}"
-      :lesson='editLesson'
+      :lesson="editLesson"
       @removeCard="remove"
       @update="update()"
       id="inputCard"
@@ -133,18 +160,28 @@
       style="position: absolute"
       :style="{ left: left + 'px', top: top + 'px' }"
     ></FormLesson>
+    <ModalTeacher id="modalTeacher" />
+    <ModalGroup id="modalGroup" />
   </div>
 </template>
 <script>
-import Cell from "./Cell";
+import Cell from "./cells/Cell";
 import FormLesson from "./forms/Lesson";
 import defaults_ru from "../data/defaults_ru";
 import http from "../http";
+import TeacherCell from "./cells/TeacherCell";
+import GroupCell from "./cells/GroupCell";
+import ModalTeacher from "./modals/ModalTeacher";
+import ModalGroup from "./modals/ModalGroup";
 
 export default {
   components: {
     Cell,
     FormLesson,
+    TeacherCell,
+    GroupCell,
+    ModalTeacher,
+    ModalGroup,
   },
   data() {
     return {
@@ -154,15 +191,7 @@ export default {
       TYPE_GROUP: "group",
       TYPE_TEACHER: "teacher",
       dtype: "group",
-      times: [
-        "9:00-10:30",
-        "10:40-12:10",
-        "12:20-13:50",
-        "14:30-16:00",
-        "16:10-17:40",
-        "17:50-19:20",
-        "19:30-21:00",
-      ],
+      times: ["09:00", "10:40", "12:20", "14:30", "16:10", "17:50", "19:30"],
       days: [1, 2, 3, 4, 5, 6],
       width: 0,
       seen: false,
@@ -176,40 +205,56 @@ export default {
       this.dtype = this.$route.query.dtype
         ? this.$route.query.dtype
         : this.TYPE_GROUP;
+      this.showModal();
     },
   },
   computed: {
     names: function () {
       if (this.dtype == this.TYPE_TEACHER)
-        return this.$store.state.teachers.filter((v) =>
-          v.last_name.toLowerCase().includes(this.code.toLowerCase()) ||
-          v.first_name.toLowerCase().includes(this.code.toLowerCase()) ||
-          v.middle_name.toLowerCase().includes(this.code.toLowerCase())
+        return this.$store.state.teachers.filter(
+          (v) =>
+            v.last_name.toLowerCase().includes(this.code.toLowerCase()) ||
+            v.first_name.toLowerCase().includes(this.code.toLowerCase()) ||
+            v.middle_name.toLowerCase().includes(this.code.toLowerCase())
         );
       else
         return this.$store.state.groups.filter((v) =>
           v.code.includes(this.code)
         );
     },
-    schedule: function(){
+    schedule: function () {
       if (this.dtype == this.TYPE_GROUP) {
         return this.$store.state.lessons_by_groups;
       } else if (this.dtype == this.TYPE_TEACHER) {
         return this.$store.state.lessons_by_teachers;
       }
       return {};
-    }
+    },
   },
   async beforeMount() {
-    await this.$store.dispatch("setSchedule");
-    await this.$store.dispatch("setTeachers");
-    await this.$store.dispatch("setLectureHalls");
+    if (
+      !this.$store.state.lessons_by_groups.length ||
+      !this.$store.state.lessons_by_teachers.length
+    ) {
+      await this.$store.dispatch("setSchedule");
+    }
+    if (this.$store.state.teachers.length == 0) {
+      await this.$store.dispatch("setTeachers");
+    }
+    if (this.$store.state.lecture_halls.length == 0) {
+      await this.$store.dispatch("setLectureHalls");
+    }
     this.dtype = this.$route.query.dtype
       ? this.$route.query.dtype
       : this.TYPE_GROUP;
     this.loaded = true;
+    this.showModal();
   },
   methods: {
+    async createSchedule(){
+      await http.createItem('CreateSchedule', {}, true);
+      await this.$store.dispatch("setSchedule");
+    },
     scrollTable(e) {
       this.$refs["names"].scrollTop = e.target.scrollTop;
       this.$refs["times"].scrollLeft = e.target.scrollLeft;
@@ -222,9 +267,9 @@ export default {
       }
     },
     create(lesson) {
-      if (this.width == 0) this.width = this.matchWidth();      
+      if (this.width == 0) this.width = this.matchWidth();
       var target = event.target;
-      while(target.tagName != "TD") {
+      while (target.tagName != "TD") {
         target = target.parentElement;
       }
       this.left = target.getBoundingClientRect().left;
@@ -237,6 +282,15 @@ export default {
     },
     remove() {
       this.seen = false;
+    },
+    showModal() {
+      var modalType = this.$route.query.modalType;
+      var id = this.$route.query.id;
+      if (modalType === "teacherModal" && id) {
+        this.$bvModal.show("modalTeacher");
+      } else if (modalType === "groupModal" && id) {
+        this.$bvModal.show("modalGroup");
+      }
     },
   },
 };
@@ -265,31 +319,19 @@ export default {
   margin: 0;
 }
 
-thead > tr {
+.thead_tr {
   height: 20px !important;
 }
-thead > tr > th {
-  min-width: 200px !important;
+.thead_tr_th {
+  min-width: 80px !important;
 }
 
-tbody > tr {
-  height: 120px !important;
+.tbody_tr {
+  height: 80px !important;
 }
 
-tbody > tr > td {
-  max-width: 200px !important;
-  min-width: 200px !important;
-}
-
-.temp {
-  width: 130px;
-}
-.unselectable {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Chrome/Safari/Opera */
-  -khtml-user-select: none; /* Konqueror */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently*/
+.tbody_tr_td {
+  max-width: 80px !important;
+  min-width: 80px !important;
 }
 </style>

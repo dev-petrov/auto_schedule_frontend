@@ -5,24 +5,22 @@ import Vue from 'vue'
 
 Vue.use(Vuex)
 
-function createResult(data, type) {
+function createResult(data, instances, type) {
     var result = new Map();
+    for (let key of instances) {
+        result[String(key.id)] = {
+            "1": {},
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {},
+        };
+    }
+
     for (var d of data) {
         var key = String(type == "g" ? d.group.id : d.teacher.id);
-        if (!result[key]) {
-            result[key] = {
-                "1": {},
-                "2": {},
-                "3": {},
-                "4": {},
-                "5": {},
-                "6": {},
-            };
-        }
         var day = String(d.day_of_week);
-        // if (!result[key][day]) {
-        //     result[key][day] = new Map();
-        // }
         result[key][day][String(d.lesson)] = d;
     }
     return result;
@@ -30,17 +28,17 @@ function createResult(data, type) {
 
 function groupByDay(data) {
     var result = {
-        "1": [],
-        "2": [],
-        "3": [],
-        "4": [],
-        "5": [],
-        "6": [],
+        "1": {},
+        "2": {},
+        "3": {},
+        "4": {},
+        "5": {},
+        "6": {},
     };
     for (let d of data) {
         var key = String(d.day_of_week);
-        result[key].push(d);
-        result[key] = result[key].sort(v => v.lesson)
+        var second_key = String(d.lesson);
+        result[key][second_key] = d;
     }
     return result;
 }
@@ -56,10 +54,26 @@ const store = new Vuex.Store({
         lessons_by_groups: {},
         lessons_by_teachers: {},
         lessons: null,
+        buildings: [],
+        education_plans: [],
+        training_directions: [],
+        flows: [],
     },
     mutations: {
         setDisciplines(state, disciplines) {
             state.disciplines = disciplines;
+        },
+        setEducationPlans(state, education_plans) {
+            state.education_plans = education_plans;
+        },
+        setFlows(state, flows) {
+            state.flows = flows;
+        },
+        setTrainingDirections(state, training_directions) {
+            state.training_directions = training_directions;
+        },
+        setBuildings(state, buildings) {
+            state.buildings = buildings;
         },
         setLectureHalls(state, lecture_halls) {
             state.lecture_halls = lecture_halls;
@@ -69,11 +83,10 @@ const store = new Vuex.Store({
         },
         setTeachers(state, teachers) {
             state.teachers = teachers;
-            console.log(teachers);
         },
         setSchedule(state, schedule) {
-            state.lessons_by_groups = createResult(schedule, "g");
-            state.lessons_by_teachers = createResult(schedule, "t");
+            state.lessons_by_groups = createResult(schedule, state.groups, "g");
+            state.lessons_by_teachers = createResult(schedule, state.teachers, "t");
         },
         setScheduleForOneEntity(state, schedule) {
             state.lessons = groupByDay(schedule);
@@ -98,6 +111,22 @@ const store = new Vuex.Store({
             var data = (await http.getList("Discipline", {}, true)).data;
             context.commit('setDisciplines', data);
         },
+        async setEducationPlans(context) {
+            var data = (await http.getList("EducationPlan", {}, true)).data;
+            context.commit('setEducationPlans', data);
+        },
+        async setFlows(context) {
+            var data = (await http.getList("Flow", {}, true)).data;
+            context.commit('setFlows', data);
+        },
+        async setTrainingDirections(context) {
+            var data = (await http.getList("TrainingDirection", {}, true)).data;
+            context.commit('setTrainingDirections', data);
+        },
+        async setBuildings(context) {
+            var data = (await http.getList("Building", {}, true)).data;
+            context.commit('setBuildings', data);
+        },
         async setLectureHalls(context) {
             var data = (await http.getList("LectureHall", {}, true)).data;
             context.commit('setLectureHalls', data);
@@ -112,6 +141,12 @@ const store = new Vuex.Store({
         },
         async setSchedule(context, filter = {}) {
             var data = (await http.getList("Lesson", filter, true)).data;
+            if (context.state.groups.length == 0) {
+                await context.dispatch('setGroups')
+            }
+            if (context.state.teachers.length == 0) {
+                await context.dispatch('setTeachers')
+            }
             context.commit('setSchedule', data);
         },
         async setScheduleForOneEntity(context, filter = {}) {
@@ -129,6 +164,14 @@ const store = new Vuex.Store({
         async deleteLesson(context, data = {}) {
             (await http.deleteItem('Lesson', data.id, true));
             context.commit('deleteLesson', data);
+        },
+        async addItem(context, data){
+            let item_data = data.data
+            let mutation = data.mutation;
+            let response = (await http.createItem(data.url, item_data, true)).data;
+            let items = context.state[data.items_name]
+            items.push(response);
+            context.commit(mutation, items);
         },
         async login(context, creds) {
             var username = creds.username;
@@ -176,7 +219,6 @@ const store = new Vuex.Store({
             Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
         },
         async checkAuth(context) {
-            await context.dispatch("setNetworks");
             try {
                 var result = await Axios.get("/api/auth/user/");
                 if (result.status != 200) {
@@ -184,7 +226,6 @@ const store = new Vuex.Store({
                     return
                 }
                 context.commit('setAuthenticated', true);
-                // await context.dispatch("setAllowedFunctions");
                 context.commit('setUser', result.data);
                 Axios.defaults.headers.common['X-CSRFToken'] = Vue.$cookies.get('csrftoken');
             } catch (e) {
